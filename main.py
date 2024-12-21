@@ -8,7 +8,7 @@ class Breakout:
         self.x_ball = 60
         self.y_ball = 145
 
-        self.r_ball = 3
+        self.r_ball = 2
 
         self.x_paddle = 45
         self.y_paddle = 165
