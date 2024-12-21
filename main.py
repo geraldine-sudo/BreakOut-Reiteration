@@ -2,16 +2,17 @@ import pyxel
 
 class Breakout:
     def __init__(self):
-        self.w_layout = 135
-        self.h_layout = 190
+        self.w_layout = 120
+        self.h_layout = 200
 
-        self.x_ball = 67.5
-        self.y_ball = 125
+        self.x_ball = 60
+        self.y_ball = 135
 
         self.r_ball = 2
 
-        self.x_paddle = 52.5
-        self.y_paddle = 145
+        self.x_paddle = 45
+        self.y_paddle = 155
+
         self.w_paddle = 30
         self.h_paddle = 5
 
