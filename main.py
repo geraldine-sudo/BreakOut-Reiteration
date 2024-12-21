@@ -1,4 +1,5 @@
 import pyxel
+from paddle import Paddle
 
 class Breakout:
     def __init__(self):
@@ -10,21 +11,18 @@ class Breakout:
 
         self.r_ball = 2
 
-        self.x_paddle = 45
-        self.y_paddle = 165
-
-        self.w_paddle = 30
-        self.h_paddle = 5
+        self.paddle = Paddle()
 
         pyxel.init(self.w_layout, self.h_layout)
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        ...
+        self.paddle.update()
 
     def draw(self):
         pyxel.cls(0)
+        self.paddle.draw()
+        
         ball = pyxel.circ(self.x_ball, self.y_ball, self.r_ball, pyxel.COLOR_DARK_BLUE)
-        paddle = pyxel.rect(self.x_paddle, self.y_paddle, self.w_paddle, self.h_paddle, pyxel.COLOR_GREEN)
 
 Breakout()
