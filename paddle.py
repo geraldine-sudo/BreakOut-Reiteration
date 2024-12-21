@@ -15,9 +15,10 @@ class Paddle:
 
     def update(self):
         # always ensure that the mouse is within layout before moving
-        if pyxel.mouse_x > (self.w_layout/2) and (0 < pyxel.mouse_x <= self.w_layout):
+        if pyxel.mouse_x > self.w_paddle / 2 + self.x_paddle and (0 < pyxel.mouse_x <= self.w_layout):
             self.x_paddle += self.dx
-        elif pyxel.mouse_x < (self.w_layout/2) and (0 < pyxel.mouse_x <= self.w_layout):
+
+        if pyxel.mouse_x < self.w_paddle / 2 + self.x_paddle and (0 < pyxel.mouse_x <= self.w_layout):
             self.x_paddle -= self.dx
 
         # horizontal border
@@ -25,4 +26,4 @@ class Paddle:
 
     def draw(self):
         pyxel.rect(self.x_paddle, self.y_paddle, self.w_paddle, self.h_paddle, pyxel.COLOR_GREEN)
-        pyxel.text(5, 190, f'x: {self.x_paddle}', pyxel.COLOR_WHITE, None)
+        pyxel.text(5, 190, f'x: {pyxel.mouse_x}', pyxel.COLOR_WHITE, None)
