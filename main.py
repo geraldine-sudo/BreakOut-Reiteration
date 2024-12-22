@@ -12,7 +12,7 @@ class Breakout:
         pyxel.init(self.w_layout, self.h_layout, title='Breakout')
 
         self.paddle = Paddle()
-        self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-4)
+        self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-3, self.paddle.w_paddle)
         self.bricks = Bricks()
 
         pyxel.load('paddle.pyxres')
@@ -21,7 +21,7 @@ class Breakout:
 
     def update(self):
         self.paddle.update()
-        self.ball.update(self.paddle.x_paddle, self.paddle.w_paddle)
+        self.ball.update(self.paddle.x_paddle)
 
     def draw(self):
         pyxel.cls(0)
