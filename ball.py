@@ -60,8 +60,15 @@ class Ball:
                 if ((x_pad <= self.x_ball +self.r_ball <= x_pad+ self.w_pad) or (x_pad <= self.x_ball - self.r_ball <= x_pad + self.w_pad))  and self.new_y_ball + self.r_ball >= self.pad_y+ 1:
                     self.y_ball= self.pad_y + 1
                     self.vy = 3 + self.v_pad*math.sin(self.angle) # Invert velocity for an upward bounce
-                    self.vx = self.v_pad*math.cos(self.angle)
                     self.t = 1/30
+
+                    if self.vx == 0:
+                        print(True)
+                        self.vx = self.v_pad*math.cos(self.angle)
+                    elif self.vx > 0:  # Ball is coming from the left side
+                        self.vx = abs(self.vx)  # Change direction to the right
+                    else:  # Ball is coming from the right side
+                        self.vx = -abs(self.vx)  # Change direction to the left
 
                 else:
                     if self.new_y_ball >= self.h_layout:
