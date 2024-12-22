@@ -2,10 +2,14 @@
 import math
 import pyxel
 class Ball:
-    def __init__(self, x: float, y: float) -> None:
+    def __init__(self, x: float, y: float, w_pad: float) -> None:
         self.w_layout = 120
         self.h_layout = 200
-        self.G = 1
+        self.G = 3
+        self.w_pad = w_pad
+        self.acceleration = 0
+        self.angle = math.pi/12
+        self.v_pad = -math.sqrt(2*self.G*(y+3))/math.sin(math.pi/12)
         self.vx = 0
         self.vy = 0
         self.v = 0
@@ -17,49 +21,82 @@ class Ball:
         self.y_ball = y
 
         self.r_ball = 2
+
+        self.launch = False
     
-    def update(self, x: float, w_pad: float):
+    def update(self, x_pad: float):
 
 
         # free fall only (can be used if nasa gitna)
         # time and initial velocity tantsa lang
 
-        self.new_y_ball = self.y_ball + self.v * self.t + 0.5 * self.G * (self.t**2)
+        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+            self.launch = True
+
+        if self.launch == True:
+
+            if self.vy < 0:  # Moving upward
+                self.acceleration = -0.1 * self.G  # Counteract gravity a bit (reduced gravity)
+            else:  # Moving downward or at peak
+                self.acceleration = 0 
+
+            self.new_y_ball = self.y_ball + self.vy * self.t + (0.05 * (self.G + self.acceleration) * (self.t**2))
+            self.new_x_ball = self.x_ball + self.vx*(self.t)*0.1
 
 
-        if self.y_ball <= self.pad_y:
 
-            # Collision with the paddle
-            if x <= self.x_ball <= x + w_pad and self.new_y_ball + self.r_ball >= self.pad_y:
-                self.y_ball= self.pad_y + 1
-                self.v = -math.sqrt(2*self.G*self.pad_y) # Invert velocity for an upward bounce
-                self.t = 1/30
+            if self.new_x_ball - self.r_ball -1 <= 0:
+
+                self.x_ball = self.r_ball + 1
+                self.vx *=(-1)
+
+            elif self.new_x_ball >= self.w_layout:
+                self.x_ball= self.w_layout - self.r_ball -1
+                self.vx *= (-1)
 
             else:
-                if self.new_y_ball >= self.h_layout:
-                    self.y_ball = self.h_layout -self.r_ball -1
+                self.x_ball = self.new_x_ball
+
+
+            if self.y_ball <= self.pad_y:
+                print(self.y_ball)
+
+                # Collision with the paddle
+                if ((x_pad <= self.x_ball +self.r_ball <= x_pad+ self.w_pad) or (x_pad <= self.x_ball - self.r_ball <= x_pad + self.w_pad))  and self.new_y_ball + self.r_ball >= self.pad_y+ 1:
+                    self.y_ball= self.pad_y + 1
+                    self.vy = self.v_pad*math.sin(self.angle) # Invert velocity for an upward bounce
+                    self.vx = self.v_pad*math.cos(self.angle)
+                    self.t = 1/30
+
                 else:
-                    self.y_ball = self.new_y_ball
-                    self.v = self.v + self.G*self.t
-                    self.t += 1/30
+                    if self.new_y_ball >= self.h_layout:
+                        self.y_ball = self.h_layout -self.r_ball -1
+                    else:
+                        if self.vy <= 0 and self.t % 0.1 == 0:
+                            self.acceleration -= 0.5
 
-            #    with the ceiling
-            if self.y_ball - self.r_ball <= 0:
-                self.y_ball = self.r_ball
-                self.v = 0 # Invert velocity for a downward bounce
-                self.t = 1/30
+                        self.y_ball = self.new_y_ball 
+                        self.vy = self.vy + (self.G +self.acceleration)*self.t
+                        self.t += 1/60
 
-        else:
-
-            if self.new_y_ball >= self.h_layout:
-                    self.y_ball = self.h_layout -self.r_ball -1
+                #    with the ceiling
+                if self.y_ball - self.r_ball <= 0:
+                    self.y_ball = self.r_ball 
+                    self.vy = 3# Invert velocity for a downward bounce
+                    self.t = 1/60
 
             else:
-                self.y_ball = self.new_y_ball 
 
-                # Update the ball's velocity due to gravity
-                self.v = self.v + self.G*self.t
-                self.t += 1/30
+                if self.new_y_ball >= self.h_layout:
+                        self.y_ball = self.h_layout -self.r_ball -1
+
+                else:
+                    self.y_ball = self.new_y_ball 
+
+                    # Update the ball's velocity due to gravity
+                    self.vy = self.vy + self.G*self.t
+                    self.t += 1/60
+                    self.acceleration = 0
 
 
     def draw(self):
