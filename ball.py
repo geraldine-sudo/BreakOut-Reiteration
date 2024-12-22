@@ -5,11 +5,11 @@ class Ball:
     def __init__(self, x: float, y: float, w_pad: float) -> None:
         self.w_layout = 120
         self.h_layout = 200
-        self.G = 3
+        self.G = 1
         self.w_pad = w_pad
         self.acceleration = 0
-        self.angle = math.pi/12
-        self.v_pad = -math.sqrt(2*self.G*(y+3))/math.sin(math.pi/12)
+        self.angle = math.pi/4
+        self.v_pad = -math.sqrt(2*self.G*(y+3)/(math.sin(math.pi/36)**2))
         self.vx = 0
         self.vy = 0
         self.v = 0
@@ -27,23 +27,18 @@ class Ball:
     def update(self, x_pad: float):
 
 
-        # free fall only (can be used if nasa gitna)
-        # time and initial velocity tantsa lang
-
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             self.launch = True
 
         if self.launch == True:
 
             if self.vy < 0:  # Moving upward
-                self.acceleration = -0.1 * self.G  # Counteract gravity a bit (reduced gravity)
+                self.acceleration = -0.3 * self.G  # Counteract gravity a bit (reduced gravity)
             else:  # Moving downward or at peak
                 self.acceleration = 0 
 
-            self.new_y_ball = self.y_ball + self.vy * self.t + (0.05 * (self.G + self.acceleration) * (self.t**2))
-            self.new_x_ball = self.x_ball + self.vx*(self.t)*0.1
-
-
+            self.new_y_ball = self.y_ball + self.vy * self.t + (0.01* (self.G + self.acceleration) * (self.t**2))
+            self.new_x_ball = self.x_ball + self.vx*(self.t)*0.05
 
             if self.new_x_ball - self.r_ball -1 <= 0:
 
@@ -58,13 +53,13 @@ class Ball:
                 self.x_ball = self.new_x_ball
 
 
-            if self.y_ball <= self.pad_y:
+            if self.y_ball <= self.pad_y: # for y component
                 print(self.y_ball)
 
                 # Collision with the paddle
                 if ((x_pad <= self.x_ball +self.r_ball <= x_pad+ self.w_pad) or (x_pad <= self.x_ball - self.r_ball <= x_pad + self.w_pad))  and self.new_y_ball + self.r_ball >= self.pad_y+ 1:
                     self.y_ball= self.pad_y + 1
-                    self.vy = self.v_pad*math.sin(self.angle) # Invert velocity for an upward bounce
+                    self.vy = 3 + self.v_pad*math.sin(self.angle) # Invert velocity for an upward bounce
                     self.vx = self.v_pad*math.cos(self.angle)
                     self.t = 1/30
 
@@ -81,12 +76,11 @@ class Ball:
 
                 #    with the ceiling
                 if self.y_ball - self.r_ball <= 0:
-                    self.y_ball = self.r_ball 
-                    self.vy = 3# Invert velocity for a downward bounce
-                    self.t = 1/60
+                    self.y_ball = self.r_ball
+                    self.vy =  3 # Invert velocity for a downward bounce
+                    self.t = 1/30
 
             else:
-
                 if self.new_y_ball >= self.h_layout:
                         self.y_ball = self.h_layout -self.r_ball -1
 
