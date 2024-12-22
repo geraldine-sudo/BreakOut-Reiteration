@@ -63,4 +63,4 @@ class Ball:
 
 
     def draw(self):
-        ball = pyxel.circ(self.x_ball, self.y_ball, self.r_ball, pyxel.COLOR_DARK_BLUE)
+        ball = pyxel.blt(self.x_ball, self.y_ball, 1, 0, 0, 8, 8)
