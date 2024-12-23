@@ -54,7 +54,6 @@ class Ball:
 
 
             if self.y_ball <= self.pad_y: # for y component
-                print(self.y_ball)
 
                 # Collision with the paddle
                 if ((x_pad <= self.x_ball +self.r_ball <= x_pad+ self.w_pad) or (x_pad <= self.x_ball - self.r_ball <= x_pad + self.w_pad))  and self.new_y_ball + self.r_ball >= self.pad_y+ 1:
@@ -101,4 +100,4 @@ class Ball:
 
 
     def draw(self):
-        ball = pyxel.blt(self.x_ball, self.y_ball, 1, 0, 0, 8, 8)
+        ball = pyxel.blt(self.x_ball, self.y_ball, 1, 0, 0, 8, 8, 0)

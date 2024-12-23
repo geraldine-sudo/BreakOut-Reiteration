@@ -13,9 +13,11 @@ class Breakout:
 
         self.paddle = Paddle()
         self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-3, self.paddle.w_paddle)
-        self.bricks = Bricks()
-
+        
         pyxel.load('paddle.pyxres')
+
+        # brick testing
+        self.bricks = [Bricks(60, 55, '1')]
 
         pyxel.run(self.update, self.draw)
 
@@ -25,7 +27,17 @@ class Breakout:
 
     def draw(self):
         pyxel.cls(0)
-        self.bricks.draw()
+
+        # cosmetics
+        for i in range(0, 160, 15):
+            pyxel.line(0, 0, pyxel.width, i, pyxel.COLOR_WHITE)
+        for i in range(0, 160, 15):
+            pyxel.line(pyxel.width, 0, 0, i, pyxel.COLOR_WHITE)
+
+        # iterate over list of bricks
+        for i in self.bricks:
+            i.draw()
+
         self.paddle.draw()
         self.ball.draw()
 
@@ -33,19 +45,7 @@ class Breakout:
         pyxel.blt(105, 187, 2, 0, 0, 8, 8)
         pyxel.blt(95, 187, 2, 0, 0, 8, 8)
         pyxel.blt(85, 187, 2, 0, 0, 8, 8)
-
-        # hardcoded bricks
-        pyxel.blt(5, 35, 0, 16, 0, 8, 16)
-        pyxel.blt(15, 55, 0, 32, 0, 8, 16)
-
-        pyxel.blt(25, 75, 0, 24, 0, 8, 16)
-
-        pyxel.blt(100, 75, 0, 32, 0, 8, 16)
-
-        pyxel.blt(105, 20, 0, 40, 0, 8, 16)
-        pyxel.blt(95, 45, 0, 16, 0, 8, 16)
         
-
         pyxel.mouse(visible=True)
 
         
