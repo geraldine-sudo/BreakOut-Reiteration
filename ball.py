@@ -7,15 +7,16 @@ class Ball:
         self.h_layout = 200
         self.G = 1
         self.w_pad = w_pad
+        self.x_pad = 0
         self.acceleration = 0
-        self.angle = math.pi/4
-        self.v_pad = -math.sqrt(2*self.G*(y+3)/(math.sin(math.pi/36)**2))
+        self.angle = math.pi/2
+        self.v_pad = -math.sqrt(2*self.G*(y+3))/ math.sin(math.pi/36)
         self.vx = 0
         self.vy = 0
         self.v = 0
         self.t = 0
         self.pad_y = y
-        self.MR = math.pi/12
+        self.degree: int| None = None
 
         self.x_ball = x
         self.y_ball = y
@@ -25,6 +26,8 @@ class Ball:
         self.launch = False
     
     def update(self, x_pad: float):
+
+        self.x_pad = x_pad
 
 
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
@@ -37,8 +40,8 @@ class Ball:
             else:  # Moving downward or at peak
                 self.acceleration = 0 
 
-            self.new_y_ball = self.y_ball + self.vy * self.t + (0.01* (self.G + self.acceleration) * (self.t**2))
-            self.new_x_ball = self.x_ball + self.vx*(self.t)*0.05
+            self.new_y_ball = self.y_ball + (self.vy *self.t) + (0.01* (self.G + self.acceleration) * (self.t**2))
+            self.new_x_ball = self.x_ball + self.vx*(1/60)
 
             if self.new_x_ball - self.r_ball -1 <= 0:
 
@@ -56,18 +59,19 @@ class Ball:
             if self.y_ball <= self.pad_y: # for y component
 
                 # Collision with the paddle
-                if ((x_pad <= self.x_ball +self.r_ball <= x_pad+ self.w_pad) or (x_pad <= self.x_ball - self.r_ball <= x_pad + self.w_pad))  and self.new_y_ball + self.r_ball >= self.pad_y+ 1:
+                if ((x_pad <= self.x_ball +self.r_ball <= x_pad+ self.w_pad) or (x_pad <= self.x_ball - self.r_ball <= x_pad + self.w_pad))  and (self.new_y_ball +self.r_ball) > self.pad_y+ 1:
                     self.y_ball= self.pad_y + 1
                     self.vy = 3 + self.v_pad*math.sin(self.angle) # Invert velocity for an upward bounce
                     self.t = 1/30
 
                     if self.vx == 0:
                         print(True)
-                        self.vx = self.v_pad*math.cos(self.angle)
+                        self.vx = -self.v_pad*math.cos(self.angle)
                     elif self.vx > 0:  # Ball is coming from the left side
                         self.vx = abs(self.vx)  # Change direction to the right
                     else:  # Ball is coming from the right side
                         self.vx = -abs(self.vx)  # Change direction to the left
+
 
                 else:
                     if self.new_y_ball >= self.h_layout:
@@ -96,7 +100,39 @@ class Ball:
                     # Update the ball's velocity due to gravity
                     self.vy = self.vy + self.G*self.t
                     self.t += 1/60
-                    self.acceleration = 0
+                    self.acceleration = 0.5
+
+        """else:
+            if ((x_pad <= self.x_ball +self.r_ball <= x_pad+ self.w_pad) or (x_pad <= self.x_ball - self.r_ball <= x_pad + self.w_pad)):
+                center_pad = x_pad + (self.w_pad/2)
+                d = center_pad - self.x_ball
+                kl = 0
+                kr = 0
+                if d != 0:
+                    kr = (90 - 5)*abs(d)
+                    kl =int((175 - 90)/(abs(d)))
+
+                if self.x_ball == center_pad:
+                    self.degree = 90
+                    self.angle = math.pi/2
+
+                elif self.x_ball <= x_pad:
+                    self.degree = 175
+                    self.angle = (self.degree*math.pi/180)
+
+                elif self.x_ball >= x_pad + self.w_pad:
+                    self.degree = 5
+                    self.angle = (self.degree*math.pi/180)
+
+                elif self.x_ball < x_pad + (self.w_pad/2):
+                    self.degree =int(kl*d) + 90
+                    self.angle = (self.degree*math.pi/180)
+
+                else:
+                    self.degree =int(kl*d) + 90
+                    self.angle = (self.degree*math.pi/180)
+            else:   
+                self.degree = None"""
 
 
     def draw(self):
