@@ -9,7 +9,7 @@ class Ball:
         self.w_pad = w_pad
         self.x_pad = 0
         self.acceleration = 0
-        self.angle = math.pi/2
+        self.angle = math.pi/36
         self.v_pad = -math.sqrt(2*self.G*(y+3))/ math.sin(math.pi/36)
         self.vx = 0
         self.vy = 0
@@ -32,6 +32,7 @@ class Ball:
 
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             self.launch = True
+            self.degree = None
 
         if self.launch == True:
 
@@ -40,7 +41,7 @@ class Ball:
             else:  # Moving downward or at peak
                 self.acceleration = 0 
 
-            self.new_y_ball = self.y_ball + (self.vy *self.t) + (0.01* (self.G + self.acceleration) * (self.t**2))
+            self.new_y_ball = self.y_ball + (self.vy *self.t) + ((self.G + self.acceleration) * (self.t**2))
             self.new_x_ball = self.x_ball + self.vx*(1/60)
 
             if self.new_x_ball - self.r_ball -1 <= 0:
@@ -102,38 +103,38 @@ class Ball:
                     self.t += 1/60
                     self.acceleration = 0.5
 
-        """else:
+        else:
             if ((x_pad <= self.x_ball +self.r_ball <= x_pad+ self.w_pad) or (x_pad <= self.x_ball - self.r_ball <= x_pad + self.w_pad)):
                 center_pad = x_pad + (self.w_pad/2)
-                d = center_pad - self.x_ball
-                kl = 0
-                kr = 0
-                if d != 0:
-                    kr = (90 - 5)*abs(d)
-                    kl =int((175 - 90)/(abs(d)))
 
                 if self.x_ball == center_pad:
                     self.degree = 90
-                    self.angle = math.pi/2
 
                 elif self.x_ball <= x_pad:
                     self.degree = 175
-                    self.angle = (self.degree*math.pi/180)
-
                 elif self.x_ball >= x_pad + self.w_pad:
                     self.degree = 5
-                    self.angle = (self.degree*math.pi/180)
-
-                elif self.x_ball < x_pad + (self.w_pad/2):
-                    self.degree =int(kl*d) + 90
-                    self.angle = (self.degree*math.pi/180)
 
                 else:
-                    self.degree =int(kl*d) + 90
-                    self.angle = (self.degree*math.pi/180)
-            else:   
-                self.degree = None"""
+                    self.degree = int(90 -((85/15)*(self.x_ball - center_pad)))
 
+
+                self.angle = math.radians(self.degree)
+            else:   
+                self.degree = None
 
     def draw(self):
+
         ball = pyxel.blt(self.x_ball, self.y_ball, 1, 0, 0, 8, 8, 0)
+
+        if self.degree != None:
+
+            if self.x_ball <= self.x_pad + self.w_pad/2:
+                angle_cyc = pyxel.text(self.x_pad + self.w_pad -10,self.pad_y -2, f"{self.degree}", pyxel.COLOR_WHITE, None)
+            else:
+                angle_cyc = pyxel.text(self.x_pad,self.pad_y -2, f"{self.degree}", pyxel.COLOR_WHITE, None)
+            length = 15
+            x2 = self.x_ball + length * math.cos(self.angle)
+            y2 = self.y_ball - length * math.sin(self.angle)
+
+            angled_line = pyxel.line(self.x_ball,self.y_ball,x2,y2, pyxel.COLOR_WHITE)
