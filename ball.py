@@ -130,11 +130,11 @@ class Ball:
         if self.degree != None:
 
             if self.x_ball <= self.x_pad + self.w_pad/2:
-                angle_cyc = pyxel.text(self.x_pad + self.w_pad -10,self.pad_y -2, f"{self.degree}", pyxel.COLOR_WHITE, None)
+                angle_cyc = pyxel.text(self.x_pad + self.w_pad -10,self.pad_y -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
             else:
-                angle_cyc = pyxel.text(self.x_pad,self.pad_y -2, f"{self.degree}", pyxel.COLOR_WHITE, None)
+                angle_cyc = pyxel.text(self.x_pad,self.pad_y -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
             length = 15
             x2 = self.x_ball + length * math.cos(self.angle)
             y2 = self.y_ball - length * math.sin(self.angle)
 
-            angled_line = pyxel.line(self.x_ball,self.y_ball,x2,y2, pyxel.COLOR_WHITE)
+            angled_line = pyxel.line(self.x_ball,self.y_ball,x2,y2, pyxel.COLOR_BLACK)

@@ -54,4 +54,5 @@ class Bricks:
                   self.u,
                   self.v,
                   self.w,
-                  self.h)
+                  self.h, 
+                  0)

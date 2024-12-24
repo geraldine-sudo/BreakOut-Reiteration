@@ -26,6 +26,6 @@ class Paddle:
         self.x_paddle = max(0, min(self.x_paddle, pyxel.width - self.w_paddle))
 
     def draw(self):
-        pyxel.blt(self.x_paddle, self.y_paddle, 0, 0, 8, self.w_paddle, self.h_paddle)
+        pyxel.blt(self.x_paddle, self.y_paddle, 0, 0, 8, self.w_paddle, self.h_paddle, 0)
         if (0 < pyxel.mouse_x <= self.w_layout) and (0 < pyxel.mouse_y <= self.h_layout):
-            pyxel.text(5, 190, f'x: {pyxel.mouse_x}', pyxel.COLOR_WHITE, None)
+            pyxel.text(5, 190, f'x: {pyxel.mouse_x}', pyxel.COLOR_BLACK, None)

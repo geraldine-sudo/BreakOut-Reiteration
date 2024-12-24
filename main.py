@@ -3,6 +3,7 @@ import pyxel
 from paddle import Paddle
 from ball import Ball
 from bricks import Bricks
+from stage3map import Stage3Map
 
 class Breakout:
     def __init__(self):
@@ -16,6 +17,8 @@ class Breakout:
         
         pyxel.load('assets.pyxres')
 
+        self.stage3map = Stage3Map()
+
         # brick testing
         self.bricks = [Bricks(60, 55, '1')]
 
@@ -26,25 +29,26 @@ class Breakout:
         self.ball.update(self.paddle.x_paddle)
 
     def draw(self):
+
+        # # iterate over list of bricks
+        # for i in self.bricks:
+        #     i.draw()
+
         pyxel.cls(0)
-
-        # cosmetics
-        for i in range(0, 160, 15):
-            pyxel.line(0, 0, pyxel.width, i, pyxel.COLOR_WHITE)
-        for i in range(0, 160, 15):
-            pyxel.line(pyxel.width, 0, 0, i, pyxel.COLOR_WHITE)
-
-        # iterate over list of bricks
-        for i in self.bricks:
-            i.draw()
+        self.stage3map.draw()
 
         self.paddle.draw()
         self.ball.draw()
 
         # hardcoded lives display
-        pyxel.blt(105, 187, 0, 0, 16, 8, 8)
-        pyxel.blt(95, 187, 0, 0, 16, 8, 8)
-        pyxel.blt(85, 187, 0, 0, 16, 8, 8)
+
+        pyxel.blt(100, 180, 0, 0, 120, 16, 16, 0)
+        pyxel.blt(85, 180, 0, 0, 120, 16, 16, 0)
+        pyxel.blt(70, 180, 0, 0, 120, 16, 16, 0)
+        
+        # pyxel.blt(105, 187, 0, 0, 16, 8, 8, 0)
+        # pyxel.blt(95, 187, 0, 0, 16, 8, 8, 0)
+        # pyxel.blt(85, 187, 0, 0, 16, 8, 8, 0)
         
         pyxel.mouse(visible=True)
 
