@@ -14,7 +14,7 @@ class Breakout:
         self.paddle = Paddle()
         self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-3, self.paddle.w_paddle)
         
-        pyxel.load('paddle.pyxres')
+        pyxel.load('assets.pyxres')
 
         # brick testing
         self.bricks = [Bricks(60, 55, '1')]
@@ -42,9 +42,9 @@ class Breakout:
         self.ball.draw()
 
         # hardcoded lives display
-        pyxel.blt(105, 187, 2, 0, 0, 8, 8)
-        pyxel.blt(95, 187, 2, 0, 0, 8, 8)
-        pyxel.blt(85, 187, 2, 0, 0, 8, 8)
+        pyxel.blt(105, 187, 0, 0, 16, 8, 8)
+        pyxel.blt(95, 187, 0, 0, 16, 8, 8)
+        pyxel.blt(85, 187, 0, 0, 16, 8, 8)
         
         pyxel.mouse(visible=True)
 

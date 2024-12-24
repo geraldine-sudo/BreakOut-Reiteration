@@ -125,7 +125,7 @@ class Ball:
 
     def draw(self):
 
-        ball = pyxel.blt(self.x_ball, self.y_ball, 1, 0, 0, 8, 8, 0)
+        ball = pyxel.blt(self.x_ball, self.y_ball, 0, 8, 0, 8, 8, 0)
 
         if self.degree != None:
 
