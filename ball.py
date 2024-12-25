@@ -97,19 +97,16 @@ class Ball:
         self.x_pad = x_pad
 
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-            self.launch = True
-            self.trig_multiplier()
-            self.vy = self.start_acc*self.sin_angle
-            self.vx = -self.start_acc*self.cos_angle
-            if self.ball_in_horbounds_of_paddle(self.x_ball):
+            if not self.launch and self.ball_in_horbounds_of_paddle(self.x_ball):
+                self.trig_multiplier ()
+                self.vy = self.start_acc*self.sin_angle
                 self.acc_y = self.G*(-1)
-                self.acc_x = 0
+                self.vx = -self.start_acc*self.cos_angle
+
+            self.launch = True
  
 
         if self.launch:
-            print(self.degree, self.vx, self.x_ball, self.acc_x)
-
-            self.trig_multiplier ()
 
             new_y_ball = self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)
             new_x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)
@@ -139,6 +136,7 @@ class Ball:
 
                     self.y_ball = self.start_yloc
                     self.acc_y = self.G*(-1)
+                    self.trig_multiplier ()
                     self.vy = self.start_acc*self.sin_angle
 
                 elif (new_y_ball- self.r_ball) <=0:
