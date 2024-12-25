@@ -24,7 +24,7 @@ class Ball:
         self.vy = 0
         self.v = 0
         self.t = 0
-        self.degree: int| None #angle in degrees
+        self.degree: int| None = None #angle in degrees
         self.angle = 0 # angle in radians
 
         #component multiplier
@@ -54,7 +54,9 @@ class Ball:
             ) or  self.x_pad <= x-self.r_ball <= (self.x_pad+ self.w_pad)
     
     def update_angle(self):
-            if self.ball_in_horbounds_of_paddle(self.x_ball):
+            d = 0
+            if not self.launch:
+                if self.ball_in_horbounds_of_paddle(self.x_ball):
                     center_pad = self.x_pad + (self.w_pad/2)
 
                     if self.x_ball == center_pad:
@@ -69,9 +71,48 @@ class Ball:
                         self.degree = int(90 -(((90 -self.MR)/(self.w_pad/2))*(self.x_ball - center_pad)))
 
                     self.angle = (math.pi)*self.degree/180
-            else:   
-                self.degree = None
+                else:
+                       
+                    self.degree = None
 
+            else:
+                if self.ball_in_horbounds_of_paddle(self.x_ball):
+                    if self.vx == 0:
+                        center_pad = self.x_pad + (self.w_pad/2)
+
+                        if self.x_ball == center_pad:
+                            self.degree = 90
+
+                        elif self.x_ball <= self.x_pad:
+                            self.degree = self.ML
+                        elif self.x_ball >= self.x_pad + self.w_pad:
+                            self.degree = self.MR
+                        else:
+                            self.degree = int(90 -(((90 -self.MR)/(self.w_pad/2))*(self.x_ball - center_pad)))
+
+                    elif self.x_ball <= self.x_pad:
+                        self.degree = self.ML
+
+                    elif self.x_ball >= self.x_ball + self.w_pad:
+                        self.degee = self.MR
+                        
+                    elif self.vx > 0:
+                        d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
+                        if d != 0:
+                            self.degree = int(self.MR*(self.w_pad/2)/d)
+                        else:
+                            self.degree = 90
+
+                    else:
+                        d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
+                        if d != 0:
+                            self.degree = int(((self.ML-90)/(self.w_pad/2))*d) + 90
+                        else:
+                            self.degree = 90
+
+                    if self.degree != None:
+
+                        self.angle = (math.pi)*self.degree/180
 
     def line_interpolation(self, x: float, y:float, find:str, coor:float)-> float:
         "coor is your new set coordinate"
@@ -128,16 +169,17 @@ class Ball:
 
             if self.ball_in_horbounds_of_paddle(self.x_ball):
 
-                if self.y_ball == self.y_pad -2: # on top of paddle
+                if self.y_ball == self.start_yloc: # on top of paddle
                     self.y_ball = new_y_ball
 
-                elif self.y_ball < self.start_yloc and new_y_ball > self.start_yloc:
+                elif self.y_ball < self.start_yloc and new_y_ball >= self.start_yloc:
                     # from above the paddle the new calculated ball surpassed the paddle
-
+                    self.update_angle()
                     self.y_ball = self.start_yloc
                     self.acc_y = self.G*(-1)
                     self.trig_multiplier ()
                     self.vy = self.start_acc*self.sin_angle
+                    self.vx = -self.start_acc*self.cos_angle
 
                 elif (new_y_ball- self.r_ball) <=0:
                     #new calculated y is out of frame
