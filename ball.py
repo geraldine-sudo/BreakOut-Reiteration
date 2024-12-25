@@ -9,10 +9,16 @@ class Ball:
         self.G = 5
         self.launch = False
 
+        # Main Ball Properties
+        self.x_ball = x
+        self.y_ball: float= y
+        self.r_ball = 2
+        self.start_yloc = y
+
         #paddle properties
         self.w_pad = w_pad
         self.x_pad = 0
-        self.y_pad = y + 2
+        self.y_pad = y + self.r_ball
         self.MR = 10
         self.ML = 170
         self.start_acc = -300
@@ -31,14 +37,6 @@ class Ball:
 
         self.sin_angle = 1
         self.cos_angle = 1
-
-        # Main Ball Properties
-        self.x_ball = x
-        self.y_ball: float= y
-        self.r_ball = 2
-        self.start_yloc = y
-        print(self.y_pad -2)
-
 
     def trig_multiplier(self):
         if self.degree == 90:
@@ -97,11 +95,15 @@ class Ball:
                         self.degee = self.MR
                         
                     elif self.vx > 0:
+                        print(2)
                         d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
                         if d != 0:
                             self.degree = int(self.MR*(self.w_pad/2)/d)
                         else:
                             self.degree = 90
+
+                        if self.degree < self.MR:
+                            self.degree = self.MR
 
                     else:
                         d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
@@ -110,9 +112,17 @@ class Ball:
                         else:
                             self.degree = 90
 
+                        if self.degree > self.ML:
+                            self.degree = 170
+
+
                     if self.degree != None:
 
                         self.angle = (math.pi)*self.degree/180
+
+            print(f"x: {self.x_ball},Degree: {self.degree}, Angle: {self.angle}, Distance from paddle: {d}")
+
+
 
     def line_interpolation(self, x: float, y:float, find:str, coor:float)-> float:
         "coor is your new set coordinate"
