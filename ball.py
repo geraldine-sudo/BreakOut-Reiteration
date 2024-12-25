@@ -237,9 +237,9 @@ class Ball:
         if (not self.launch) and self.degree != None:
 
             if self.x_ball <= self.x_pad + self.w_pad/2:
-                angle_cyc = pyxel.text(self.x_pad + self.w_pad -10,self.pad_y -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
+                angle_cyc = pyxel.text(self.x_pad + self.w_pad -10,self.y_pad -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
             else:
-                angle_cyc = pyxel.text(self.x_pad,self.pad_y -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
+                angle_cyc = pyxel.text(self.x_pad,self.y_pad -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
             length = 15
             x2 = self.x_ball + length * math.cos(self.angle)
             y2 = self.y_ball - length * math.sin(self.angle)
