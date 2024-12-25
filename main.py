@@ -13,7 +13,7 @@ class Breakout:
         pyxel.init(self.w_layout, self.h_layout, title='Breakout')
 
         self.paddle = Paddle()
-        self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-3, self.paddle.w_paddle)
+        self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-3, self.paddle.w_paddle, self.paddle.h_paddle)
         
         pyxel.load('assets.pyxres')
 
