@@ -2,7 +2,7 @@
 import math
 import pyxel
 class Ball:
-    def __init__(self, x: float, y: float, w_pad: float) -> None:
+    def __init__(self, x: float, y: float, w_pad: float, h_pad:float) -> None:
         #layout
         self.w_layout = 120
         self.h_layout = 200
@@ -10,18 +10,20 @@ class Ball:
         self.launch = False
 
         # Main Ball Properties
-        self.x_ball = x
+        self.x_ball: float = x
         self.y_ball: float= y
         self.r_ball = 2
         self.start_yloc = y
 
         #paddle properties
         self.w_pad = w_pad
+        self.h_pad = h_pad
         self.x_pad = 0
         self.y_pad = y + self.r_ball
         self.MR = 10
         self.ML = 170
         self.start_acc = -300
+        self.h_pad = 10
 
         #ball properties
         self.acc_y = 0
@@ -37,6 +39,8 @@ class Ball:
 
         self.sin_angle = 1
         self.cos_angle = 1
+
+
 
     def trig_multiplier(self):
         if self.degree == 90:
@@ -64,7 +68,7 @@ class Ball:
                         self.degree = self.ML
                     elif self.x_ball >= self.x_pad + self.w_pad:
                         self.degree = self.MR
-
+                        
                     else:
                         self.degree = int(90 -(((90 -self.MR)/(self.w_pad/2))*(self.x_ball - center_pad)))
 
@@ -88,14 +92,14 @@ class Ball:
                         else:
                             self.degree = int(90 -(((90 -self.MR)/(self.w_pad/2))*(self.x_ball - center_pad)))
 
-                    elif self.x_ball <= self.x_pad:
-                        self.degree = self.ML
+                    elif self.x_ball <= self.x_pad or self.x_ball >= self.x_ball + self.w_pad:
+                        if self.vx > 0:
+                            self.degree = self.MR
 
-                    elif self.x_ball >= self.x_ball + self.w_pad:
-                        self.degee = self.MR
-                        
+                        else:
+                            self.degree = self.ML
+
                     elif self.vx > 0:
-                        print(2)
                         d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
                         if d != 0:
                             self.degree = int(self.MR*(self.w_pad/2)/d)
@@ -113,15 +117,10 @@ class Ball:
                             self.degree = 90
 
                         if self.degree > self.ML:
-                            self.degree = 170
+                            self.degree = self.ML
 
 
-                    if self.degree != None:
-
-                        self.angle = (math.pi)*self.degree/180
-
-            print(f"x: {self.x_ball},Degree: {self.degree}, Angle: {self.angle}, Distance from paddle: {d}")
-
+                    self.angle = (math.pi)*self.degree/180
 
 
     def line_interpolation(self, x: float, y:float, find:str, coor:float)-> float:
