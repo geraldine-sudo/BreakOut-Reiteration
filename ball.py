@@ -27,12 +27,26 @@ class Ball:
         self.degree: int| None #angle in degrees
         self.angle = 0 # angle in radians
 
+        #component multiplier
+
+        self.sin_angle = 1
+        self.cos_angle = 1
+
         # Main Ball Properties
         self.x_ball = x
         self.y_ball: float= y
         self.r_ball = 2
         self.start_yloc = y
         print(self.y_pad -2)
+
+
+    def trig_multiplier(self):
+        if self.degree == 90:
+            self.sin_angle = 1.0  # sin(90 degrees) is exactly 1
+            self.cos_angle = 0.0  # cos(90 degrees) is exactly 0
+        else:
+            self.sin_angle = math.sin(self.angle)
+            self.cos_angle = math.cos(self.angle)
 
     def ball_in_horbounds_of_paddle(self, x:float) -> bool:
 
@@ -54,7 +68,7 @@ class Ball:
                     else:
                         self.degree = int(90 -(((90 -self.MR)/(self.w_pad/2))*(self.x_ball - center_pad)))
 
-                    self.angle = math.radians(self.degree)
+                    self.angle = (math.pi)*self.degree/180
             else:   
                 self.degree = None
 
@@ -84,18 +98,21 @@ class Ball:
 
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             self.launch = True
-            self.degree = None
+            self.trig_multiplier()
+            self.vy = self.start_acc*self.sin_angle
+            self.vx = -self.start_acc*self.cos_angle
             if self.ball_in_horbounds_of_paddle(self.x_ball):
-                self.vy = self.start_acc*math.sin(self.angle)
-                self.vx = -self.start_acc*math.cos(self.angle)
                 self.acc_y = self.G*(-1)
                 self.acc_x = 0
  
 
         if self.launch:
-            
+            print(self.degree, self.vx, self.x_ball, self.acc_x)
+
+            self.trig_multiplier ()
+
             new_y_ball = self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)
-            new_x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x + self.G)*(1/60)
+            new_x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)
 
             if new_x_ball - self.r_ball <= 0:
                 self.vx*=(-1)
@@ -122,7 +139,7 @@ class Ball:
 
                     self.y_ball = self.start_yloc
                     self.acc_y = self.G*(-1)
-                    self.vy = self.start_acc*math.sin(self.angle)
+                    self.vy = self.start_acc*self.sin_angle
 
                 elif (new_y_ball- self.r_ball) <=0:
                     #new calculated y is out of frame
@@ -167,7 +184,7 @@ class Ball:
 
         ball = pyxel.blt(self.x_ball, self.y_ball, 0, 8, 0, 8, 8, 0)
 
-        if self.degree != None:
+        if (not self.launch) and self.degree != None:
 
             if self.x_ball <= self.x_pad + self.w_pad/2:
                 angle_cyc = pyxel.text(self.x_pad + self.w_pad -10,self.pad_y -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
