@@ -238,7 +238,6 @@ class Ball:
 
             # Paddle Collsion
             if self.ball_in_horbounds_of_paddle(self.x_ball) and self.y_ball ==self.start_yloc:
-                print(1)
                 #at the top of paddle
                 self.x_ball = new_x_ball
                 self.y_ball = new_y_ball
@@ -254,7 +253,6 @@ class Ball:
                 self.y_ball < self.start_yloc < new_y_ball  and 
                 self.ball_in_horbounds_of_paddle(new_x_ball)
             ): # above the paddle and it surpassed the paddle
-                print(2)
                 self.y_ball = self.start_yloc
                 self.x_ball = new_x_ball
                 self.update_angle()
@@ -263,7 +261,6 @@ class Ball:
                 self.vy = self.start_acc*self.sin_angle
 
             elif self.vx != 0:
-                print(3)
                 if self.y_ball >= self.h_pad + self.y_pad + self.r_ball:
                     top =self.intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.x_pad - self.r_ball,
                         self.y_pad- self.r_ball),(self.x_pad +self.w_pad +self.r_ball,self.y_pad- self.r_ball))
@@ -281,16 +278,15 @@ class Ball:
                     side = self.intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.x_pad - self.r_ball,
                     self.y_pad- self.r_ball),(self.x_pad - self.r_ball,self.y_pad+self.r_ball+ self.h_pad))
                 else:
-                    print("line_interpolation")
                     side = self.intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.x_pad +self.w_pad +self.r_ball,
                     self.y_pad- self.r_ball),(self.x_pad +self.w_pad +self.r_ball,self.y_pad+self.r_ball+ self.h_pad))
 
                 if side:
                     if self.vx >0:
-                        print("yes")
+                        
                         self.x_ball = self.x_pad - self.r_ball
                     else:
-                        print("no")
+                        
                         self.x_ball = self.x_pad +self.w_pad +self.r_ball
 
                     self.y_ball = side[1]
@@ -305,7 +301,6 @@ class Ball:
                 self.vy += (self.acc_y + self.G)
 
             else:
-                print(4)
                 if self.ball_in_horbounds_of_paddle(new_x_ball) and (
                     self.start_yloc <= new_y_ball <= self.y_pad + self.h_pad + self.r_ball):
 
@@ -348,6 +343,9 @@ class Ball:
                     self.vy = 0
                     self.acc_y = -self.G
                     self.vx = 0
+
+        else:
+            self.update_angle()
 
         else:
             self.update_angle()
