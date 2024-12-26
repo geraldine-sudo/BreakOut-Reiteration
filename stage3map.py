@@ -23,22 +23,33 @@ class Stage3Map:
 
         pyxel.ellib(100, -75, 55, 200, pyxel.COLOR_BLACK)
 
-        pyxel.blt(30, 25, 0, 0, 152, 100, 65, 0)
+
+
+
 
         
+        # cocoons 
+        pyxel.line(14, 0, 14, 40, pyxel.COLOR_BLACK)
+        pyxel.blt(10, 30, 0, 72, 0, 8, 16, 0)
+
+        pyxel.line(24, 0, 24, 70, pyxel.COLOR_BLACK)
+        pyxel.blt(20, 65, 0, 24, 0, 8, 16, 0)
+
+        pyxel.line(94, 0, 94, 66, pyxel.COLOR_BLACK)
+        pyxel.blt(90, 65, 0, 64, 0, 8, 16, 0)
+
+        pyxel.line(104, 0, 104, 40, pyxel.COLOR_BLACK)
+        pyxel.blt(100, 30, 0, 32, 0, 8, 16, 0)
+
+        # text bg
+        pyxel.blt(30, 25, 0, 0, 152, 60, 65, 0)
         pyxel.blt(5, 12, 0, 0, 224, 50, 16, 0)
 
         for x in range(12, 80, 12):
             pyxel.blt(x, 12, 0, 0, 224, 50, 16, 0)
 
 
-        # pyxel.blt(12, 12, 0, 0, 224, 50, 16, 0)
-
-        # pyxel.blt(24, 12, 0, 0, 224, 50, 16, 0)
-
-        # pyxel.blt(36, 12, 0, 0, 224, 50, 16, 0)
-
-        # pyxel.blt(48, 12, 0, 0, 224, 50, 16, 0)
-
         pyxel.text(10, 15, 'Other Mother craves flesh.', pyxel.COLOR_RED)
+
+
 
