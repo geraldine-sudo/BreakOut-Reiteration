@@ -13,7 +13,7 @@ class Ball:
         # Main Ball Properties
         self.x_ball: float = x
         self.y_ball: float= y
-        self.r_ball = 4
+        self.r_ball = 3.5
         self.start_yloc = y
 
         #paddle properties
@@ -21,12 +21,6 @@ class Ball:
         self.h_pad = h_pad
         self.x_pad = 0
         self.y_pad = y + self.r_ball
-        self.MR = 10
-        self.ML = 170
-        self.NT = 280
-        self.NB = 80
-        self.MT = 260
-        self.MB = 100
         self.start_acc = -300
         self.h_pad = h_pad
 
@@ -39,6 +33,17 @@ class Ball:
         self.t = 0
         self.degree: int| None = None #angle in degrees
         self.angle = 0 # angle in radians
+        self.trail : list[tuple[float,float]] = []
+
+        #Angles
+        self.MR = 10
+        self.ML = 170
+        self.NT = 280
+        self.NB = 80
+        self.MT = 260
+        self.MB = 100
+        self.NR = 350
+        self.NL = 190
 
         #component multiplier
 
@@ -74,47 +79,6 @@ class Ball:
 
             return self.x_pad <= x+self.r_ball <= (self.x_pad+ self.w_pad
             ) or  self.x_pad <= x-self.r_ball <= (self.x_pad+ self.w_pad)
-    
-    def intersection(self,P1: tuple[float, float], P2: tuple[float, float], P3: tuple[float, float], P4: tuple[float, float])-> None | tuple[float,float]:
-        
-        x1, y1 = P1
-        x2, y2 = P2
-        x3, y3 = P3
-        x4, y4 = P4
-        # Convert to standard form: Ax + By = C
-        a1 = y2 - y1
-        b1 = x1 - x2
-        c1 = x1*a1 + b1*y1
-        
-        a2 = y4 - y3
-        b2 = x3 - x4
-        c2 = x3*a2 + b2*y3
-        
-        # Check if the lines are coincident
-        if a1 * b2 == a2 * b1 and b1 * c2 == b2 * c1 and a1 * c2 == a2 * c1:
-            return None # Lines are coincident, and we cannot determine a single intersection point
-            # Get the intersection using Cramer's Rule
-        
-        d= a1 * b2 - b1 * a2  # Determinant of the matrix
-
-        if d == 0:
-            return None  # Lines are parallel and do not intersect
-        else:
-            # Coordinates of the intersection point
-            x = (b2 * c1 - b1 * c2) / d
-            y = (a1 * c2 - a2 * c1) / d
-
-            # Check if the intersection point lies within the line segments
-            if (
-                min(x1, x2) <= x <= max(x1, x2)
-                and min(y1, y2) <= y <= max(y1, y2)
-                and min(x3, x4) <= x <= max(x3, x4)
-                and min(y3, y4) <= y <= max(y3, y4)
-            ):
-                return(x, y)
-            else:
-                print(f"3, x: {x},y: {y}, d: {d}, current: {(self.x_ball,self.y_ball)} new: {P2} brick1: {P3}, brick2: {P4}")
-                return None
 
     def get_line_intersection(self, p1:tuple[float,float], p2:tuple[float,float], p3:tuple[float,float], p4:tuple[float,float]):
     # Using the line segment intersection formula
@@ -143,7 +107,8 @@ class Ball:
             return (ix, iy)
     
         return None
-    def update_angle(self):
+    def update_angle(self,pos: str,x: float, y:float, w: float, h: float):
+
         d = 0
         if not self.launch:
             
@@ -168,25 +133,25 @@ class Ball:
             self.trig_multiplier()
 
         else:
-            if self.y_ball == self.start_yloc:
+            if pos == "top":
                 if self.vx == 0:
-                    center_pad = self.x_pad + (self.w_pad/2)
+                    center_pad = x + (w/2)
 
                     if self.x_ball == center_pad:
                         self.degree = 90
 
-                    elif self.x_ball <= self.x_pad:
+                    elif self.x_ball <= x:
                         self.degree = self.ML
-                    elif self.x_ball >= self.x_pad + self.w_pad:
+                    elif self.x_ball >= x + w:
                         self.degree = self.MR
                     else:
-                        self.degree = int(90 -(((90 -self.MR)/(self.w_pad/2))*(self.x_ball - center_pad)))
+                        self.degree = int(90 -(((90 -self.MR)/(w/2))*(self.x_ball - center_pad)))
 
                 elif self.vx > 0:
-                    d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
+                    d = int(abs(x + (w/2) - self.x_ball))
                     if d != 0:
-                        if d < (self.w_pad/2):
-                            self.degree = int(90 +(self.MR-90)*d/(self.w_pad//2))
+                        if d < (w/2):
+                            self.degree = int(90 +(self.MR-90)*d/(w//2))
 
                         else:
                             self.degree = self.MR
@@ -194,30 +159,30 @@ class Ball:
                         self.degree = 90
 
                 else:
-                    d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
+                    d = int(abs(x + (w/2) - self.x_ball))
                     if d != 0:
-                        if d < (self.w_pad/2):
-                            self.degree = int(90 +(self.ML-90)*d/(self.w_pad//2)) 
+                        if d < (w/2):
+                            self.degree = int(90 +(self.ML-90)*d/(w//2)) 
                         else:
                             self.degree = self.ML
                     else:
                         self.degree = 90
 
 
-            elif self.x_ball == self.x_pad + self.r_ball + self.w_pad:
-                d = int(abs(self.y_pad + (self.h_pad/2) - self.y_ball))
+            elif pos == "right":
+                d = int(abs(y + (h/2) - self.y_ball))
 
                 if d != 0:
                     if self.vy >= 0:
 
-                        if d < (self.h_pad/2):
-                            self.degree = int(360+(self.NT-360)*d/(self.h_pad//2))
+                        if d < (h/2):
+                            self.degree = int(360+(self.NT-360)*d/(h//2))
                         else:
                             self.degree = self.NT
                         
                     else:
-                        if d < (self.h_pad/2):
-                            self.degree = int((self.NB)*d/(self.h_pad//2))
+                        if d < (h/2):
+                            self.degree = int((self.NB)*d/(h//2))
 
                         else:
                             self.degree = self.NB
@@ -225,19 +190,19 @@ class Ball:
                 else:
                     self.degree = 0
 
-            elif self.x_ball == self.x_pad - self.r_ball:
-                d = int(abs(self.y_pad + (self.h_pad/2) - self.y_ball))
+            elif pos == "left":
+                d = int(abs(y + (h/2) - self.y_ball))
 
 
                 if d != 0:
                     if self.vy >= 0:
                         if d < (self.h_pad/2):
-                            self.degree = int(180+(self.MT-180)*d/(self.h_pad//2))
+                            self.degree = int(180+(self.MT-180)*d/(h/2))
                         else:
                             self.degree  = self.MT
                     else:
-                        if d < (self.h_pad/2):
-                            self.degree = int((self.MB-180)*d/(self.h_pad//2))
+                        if d < (h/2):
+                            self.degree = int((self.MB-180)*d/(h//2))
 
                         else:
                             self.degree = self.MT
@@ -245,42 +210,73 @@ class Ball:
                 else:
                     self.degree = 180
 
+            else:
+                if self.vx == 0:
+                    center_pad = x + (w/2)
+
+                    if self.x_ball == center_pad:
+                        self.degree = 270
+                    elif self.x_ball <= self.x_pad:
+                        self.degree = self.NL
+                    elif self.x_ball >= self.x_pad + self.w_pad:
+                        self.degree = self.NR
+
+                    else:
+                        self.degree = int(270 -(((270 -self.NR)/(w/2))*(self.x_ball - center_pad)))
+
+                elif self.vx > 0:
+                    d = int(abs(x + (w/2) - self.x_ball))
+                    if d != 0:
+                        if d < (w/2):
+                            self.degree = int(270 +(self.NR-270)*d/(w//2))
+
+                        else:
+                            self.degree = self.NR
+                    else:
+                        self.degree = 270
+
+                else:
+                    d = int(abs(x + (w/2) - self.x_ball))
+                    if d != 0:
+                        if d < (w/2):
+                            self.degree = int(270 +(self.NL-270)*d/(w//2)) 
+                        else:
+                            self.degree = self.NL
+                    else:
+                        self.degree = 270
+
         if self.degree:
             self.angle = math.radians(self.degree)
             self.trig_multiplier()
 
-    def brick_collision(self, new_x_ball: float, new_y_ball: float, brick : Bricks) ->  None | tuple[float,float,float,str]:
+    def brick_collision(self, new_x_ball: float, new_y_ball: float, brick : Bricks) ->  None | tuple[float,float,float,str, Bricks]:
 
-        interesections: list[tuple[float,float,float, str]] = []
+        interesections: list[tuple[float,float,float, str, Bricks]] = []
         if self.vy > 0:
             extremes = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (brick.x - self.r_ball,
                         brick.y - self.r_ball),(brick.x + brick.w +self.r_ball, brick.y- self.r_ball))
             if extremes:
-                interesections.append((extremes[0], extremes[1], (extremes[0]-self.x_ball)**2 + (extremes[1]-self.y_ball)**2, "top" ))
+                interesections.append((extremes[0], extremes[1], (extremes[0]-self.x_ball)**2 + (extremes[1]-self.y_ball)**2, "top", brick))
 
         else:
-            print(1)
-            print((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (brick.x - self.r_ball,
-                        brick.y + self.r_ball +brick.h),(brick.x + brick.w +self.r_ball, brick.y + self.r_ball +brick.h))
             
             extremes = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (brick.x - self.r_ball,
                         brick.y + self.r_ball +brick.h),(brick.x + brick.w +self.r_ball, brick.y + self.r_ball +brick.h))
             if extremes:
-                interesections.append((extremes[0], extremes[1], (extremes[0]-self.x_ball)**2 + (extremes[1]-self.y_ball)**2, "bottom"))
+                interesections.append((extremes[0], extremes[1], (extremes[0]-self.x_ball)**2 + (extremes[1]-self.y_ball)**2, "bottom", brick))
             
         if self.vx <= 0:
             
             side = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (brick.x + self.r_ball + brick.w,
                         brick.y - self.r_ball),(brick.x + brick.w +self.r_ball, brick.y + self.r_ball +brick.h))
             if side:
-                interesections.append((side[0], side[1], (side[0]-self.x_ball)**2 + (side[1]-self.y_ball)**2, "right"))
+                interesections.append((side[0], side[1], (side[0]-self.x_ball)**2 + (side[1]-self.y_ball)**2, "right", brick))
         elif self.vx>0:
             side = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (brick.x - self.r_ball,
                         brick.y - self.r_ball),(brick.x - self.r_ball, brick.y + self.r_ball +brick.h))
             if side:
-                interesections.append((side[0], side[1], (side[0]-self.x_ball)**2 + (side[1]-self.y_ball)**2, "left" ))
+                interesections.append((side[0], side[1], (side[0]-self.x_ball)**2 + (side[1]-self.y_ball)**2, "left", brick))
             
-        print(interesections)
         return None if len(interesections) <= 0 else sorted(interesections, key = lambda b: b[2])[0]
 
     def update(self, x_pad: float):
@@ -289,7 +285,10 @@ class Ball:
 
         self.x_pad = x_pad
 
-        self.bricks_collide = False
+        self.trail.append((self.x_ball, self.y_ball))
+
+        if len(self.trail) > 5:
+            self.trail.pop(0)
 
 
 
@@ -308,7 +307,7 @@ class Ball:
             new_x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)
 
 
-            #bricks collision
+            #Bricks collision
 
             ball_bricks_collide = min((pt for b in self.bricks if (pt := self.brick_collision(new_x_ball, new_y_ball, b))),
                             default=None, key=lambda x: x[2])
@@ -318,24 +317,33 @@ class Ball:
                 if ball_bricks_collide[3] == "top":
                     self.x_ball = ball_bricks_collide[0]
                     self.y_ball = ball_bricks_collide[1]
-                    self.vy *= -1
+                    self.update_angle("top", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
+                    self.vy = self.start_acc*self.sin_angle
+                    self.vx = -self.start_acc*self.cos_angle
                     self.acc_y = 0
 
                 elif ball_bricks_collide[3] == "bottom":
                     self.x_ball = ball_bricks_collide[0]
                     self.y_ball = ball_bricks_collide[1]
-                    self.vy *= -1
+                    self.update_angle("bottom", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
+                    self.vy = self.start_acc*self.sin_angle
+                    self.vx = -self.start_acc*self.cos_angle
                     self.acc_y = -self.G
 
                 elif ball_bricks_collide[3] == "right":
                     self.x_ball = ball_bricks_collide[0]
                     self.y_ball = ball_bricks_collide[1]
-                    self.vx *= -1
-
+                    self.update_angle("right", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
+                    self.vy = self.start_acc*self.sin_angle
+                    self.vx = -self.start_acc*self.cos_angle
                 else:
                     self.x_ball = ball_bricks_collide[0]
                     self.y_ball = ball_bricks_collide[1]
-                    self.vx *= -1
+                    self.update_angle("left", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
+                    self.vy = self.start_acc*self.sin_angle
+                    self.vx = -self.start_acc*self.cos_angle
+                return
+                
             
             # Paddle Collsion
 
@@ -361,7 +369,7 @@ class Ball:
                 
                     self.y_ball = self.start_yloc
                     self.x_ball = new_x_ball
-                    self.update_angle()
+                    self.update_angle("top", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
                     self.acc_y = -self.G
                     self.vx = -self.start_acc*self.cos_angle
                     self.vy = self.start_acc*self.sin_angle
@@ -375,7 +383,7 @@ class Ball:
                         if top: # will go through the top of the paddle
                             self.y_ball = self.start_yloc
                             self.x_ball = top[0]
-                            self.update_angle()
+                            self.update_angle("top", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
                             self.acc_y = -self.G
                             self.vx = -self.start_acc*self.cos_angle
                             self.vy = self.start_acc*self.sin_angle
@@ -389,15 +397,14 @@ class Ball:
                         self.y_pad- self.r_ball),(self.x_pad +self.w_pad +self.r_ball,self.y_pad+self.r_ball+ self.h_pad))
 
                     if side:
+                        self.y_ball = side[1]
                         if self.vx >0:
                             
                             self.x_ball = self.x_pad - self.r_ball
+                            self.update_angle("left", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
                         else:
-                            
                             self.x_ball = self.x_pad +self.w_pad +self.r_ball
-
-                        self.y_ball = side[1]
-                        self.update_angle()
+                            self.update_angle("right", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
                         self.vx = -self.start_acc*self.cos_angle
                         self.vy = self.start_acc*self.sin_angle
 
@@ -413,13 +420,15 @@ class Ball:
                     if self.ball_in_horbounds_of_paddle(new_x_ball) and (
                         self.start_yloc <= new_y_ball <= self.y_pad + self.h_pad + self.r_ball):
 
+                        self.y_ball = new_y_ball
+
                         if self.x_ball < self.x_pad + self.w_pad // 2:
                             self.x_ball = self.x_pad - self.r_ball
+                            self.update_angle("left", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
                         else:
                             self.x_ball = self.x_pad + self.r_ball + self.w_pad
+                            self.update_angle("right", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
 
-                        self.y_ball = new_y_ball
-                        self.update_angle()
                         self.vx = -self.start_acc*self.cos_angle
                         self.vy = self.start_acc*self.sin_angle
 
@@ -454,9 +463,14 @@ class Ball:
                     self.vx = 0
 
         else:
-            self.update_angle()
+            self.update_angle("top", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
 
     def draw(self):
+
+        # In the draw method:
+        for  (tx, ty) in self.trail:
+            pyxel.rect(tx+ self.r_ball, ty, self.r_ball//2, self.r_ball//2, pyxel.COLOR_WHITE)
+
         
         ball = pyxel.blt(self.x_ball, self.y_ball, 0, 8, 0, 8, 8, 0)
 
