@@ -127,30 +127,24 @@ with open('stages.json', 'r') as f:
 # print(stage['1']['Stage1']['u'])
 
 class Bricks:
-    def __init__(self, x: int, y: int, brick_level: str) -> None:
+    def __init__(self, x: int, y: int,  brick_level: str, stage_level: str) -> None:
         self.x = x
         self.y = y
         self.brick_level = brick_level
 
-        # self.img: int = stage[brick_level]['img']
-        # self.w: int = stage[brick_level]['w']
-        # self.h:int = stage[brick_level]['h']
+        # self.img: int = stage[brick_level][stage_level]['img']
+        self.w: int = stage[brick_level][stage_level]['w']
+        self.h:int = stage[brick_level][stage_level]['h']
 
-        # self.u: int = stage[brick_level]['u']
-        # self.v: int = stage[brick_level]['v']
-
-    def update(self):
-        ...
+        self.u: int = stage[brick_level][stage_level]['u']
+        self.v: int = stage[brick_level][stage_level]['v']
 
     def draw(self):
-        # print(stage[self.brick_level]['u'])
- 
-        # pyxel.blt(self.x, 
-        #           self.y, 
-        #           0, 
-        #           self.u,
-        #           self.v,
-        #           self.w,
-        #           self.h, 
-        #           0)
-        ...
+        pyxel.blt(self.x, 
+                  self.y, 
+                  0, 
+                  self.u,
+                  self.v,
+                  self.w,
+                  self.h, 
+                  0)
