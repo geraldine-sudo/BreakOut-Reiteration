@@ -128,13 +128,13 @@ with open('stages.json', 'r') as f:
 
 class Bricks:
     def __init__(self, x: int, y: int,  brick_level: str, stage_level: str) -> None:
-        self.x = x
+        self.x = x # +5
         self.y = y
         self.brick_level = brick_level
 
         # self.img: int = stage[brick_level][stage_level]['img']
-        self.w: int = stage[brick_level][stage_level]['w']
-        self.h:int = stage[brick_level][stage_level]['h']
+        self.w: int = stage[brick_level][stage_level]['w'] #=5
+        self.h:int = stage[brick_level][stage_level]['h'] #=21
 
         self.u: int = stage[brick_level][stage_level]['u']
         self.v: int = stage[brick_level][stage_level]['v']
