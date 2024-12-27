@@ -3,7 +3,7 @@ import pyxel
 from paddle import Paddle
 from ball import Ball
 from bricks import Bricks
-from stage3map import Stage3Map
+from stages import Stage1Map
 
 class Breakout:
     def __init__(self):
@@ -17,7 +17,8 @@ class Breakout:
         
         pyxel.load('assets.pyxres')
 
-        self.stage3map = Stage3Map()
+        self.stagemap = Stage1Map()
+        # self.curstage = Stage1Map()
 
         # brick testing
         self.bricks = [Bricks(60, 55, '1')]
@@ -35,7 +36,7 @@ class Breakout:
         #     i.draw()
 
         pyxel.cls(0)
-        self.stage3map.draw()
+        self.stagemap.draw()
 
         self.paddle.draw()
         self.ball.draw()
