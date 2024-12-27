@@ -71,6 +71,7 @@ class Ball:
             ) or  self.x_pad <= x-self.r_ball <= (self.x_pad+ self.w_pad)
     
     def intersection(self,P1: tuple[float, float], P2: tuple[float, float], P3: tuple[float, float], P4: tuple[float, float])-> None | tuple[float,float]:
+        
         x1, y1 = P1
         x2, y2 = P2
         x3, y3 = P3
@@ -111,110 +112,111 @@ class Ball:
 
     
     def update_angle(self):
-            d = 0
-            if not self.launch:
-                
-                x1, y1 = pyxel.mouse_x, pyxel.mouse_y
-                x2, y2 = self.x_ball, self.y_ball
-                
-                # Vector difference
-                dx = x1 - x2
-                dy = y2 - y1
-                
-                # Calculate angle in radians and convert to degrees
-                self.angle = math.atan2(dy, dx)
-                self.degree = int(math.degrees(self.angle))
+        d = 0
+        if not self.launch:
+            
+            x1, y1 = pyxel.mouse_x, pyxel.mouse_y
+            x2, y2 = self.x_ball, self.y_ball
+            
+            # Vector difference
+            dx = x1 - x2
+            dy = y2 - y1
+            
+            # Calculate angle in radians and convert to degrees
+            self.angle = math.atan2(dy, dx)
+            self.degree = int(math.degrees(self.angle))
 
-                if self.degree < 0:
-                    if pyxel.mouse_x >= self.x_ball:
-                        self.degree = 0
+            if self.degree < 0:
+                if pyxel.mouse_x >= self.x_ball:
+                    self.degree = 0
 
+                else:
+                    self.degree = 180
+            self.angle = math.radians(self.degree)
+            self.trig_multiplier()
+
+        else:
+            if self.y_ball == self.start_yloc:
+                if self.vx == 0:
+                    center_pad = self.x_pad + (self.w_pad/2)
+
+                    if self.x_ball == center_pad:
+                        self.degree = 90
+
+                    elif self.x_ball <= self.x_pad:
+                        self.degree = self.ML
+                    elif self.x_ball >= self.x_pad + self.w_pad:
+                        self.degree = self.MR
                     else:
-                        self.degree = 180
-                self.angle = math.radians(self.degree)
-                self.trig_multiplier()
+                        self.degree = int(90 -(((90 -self.MR)/(self.w_pad/2))*(self.x_ball - center_pad)))
 
-            else:
-                if self.y_ball == self.start_yloc:
-                    if self.vx == 0:
-                        center_pad = self.x_pad + (self.w_pad/2)
+                elif self.vx > 0:
+                    d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
+                    if d != 0:
+                        if d < (self.w_pad/2):
+                            self.degree = int(90 +(self.MR-90)*d/(self.w_pad//2))
 
-                        if self.x_ball == center_pad:
-                            self.degree = 90
-
-                        elif self.x_ball <= self.x_pad:
-                            self.degree = self.ML
-                        elif self.x_ball >= self.x_pad + self.w_pad:
+                        else:
                             self.degree = self.MR
-                        else:
-                            self.degree = int(90 -(((90 -self.MR)/(self.w_pad/2))*(self.x_ball - center_pad)))
-
-                    elif self.vx > 0:
-                        d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
-                        if d != 0:
-                            if d < (self.w_pad/2):
-                                self.degree = int(90 +(self.MR-90)*d/(self.w_pad//2))
-
-                            else:
-                                self.degree = self.MR
-                        else:
-                            self.degree = 90
-
                     else:
-                        d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
-                        if d != 0:
-                            if d < (self.w_pad/2):
-                                self.degree = int(90 +(self.ML-90)*d/(self.w_pad//2)) 
-                            else:
-                                self.degree = self.ML
-                        else:
-                            self.degree = 90
+                        self.degree = 90
 
-
-                elif self.x_ball == self.x_pad + self.r_ball + self.w_pad:
-                    d = int(abs(self.y_pad + (self.h_pad/2) - self.y_ball))
-
+                else:
+                    d = int(abs(self.x_pad + (self.w_pad/2) - self.x_ball))
                     if d != 0:
-                        if self.vy >= 0:
-
-                            if d < (self.h_pad/2):
-                                self.degree = int(360+(self.NT-360)*d/(self.h_pad//2))
-                            else:
-                                self.degree = self.NT
-                            
+                        if d < (self.w_pad/2):
+                            self.degree = int(90 +(self.ML-90)*d/(self.w_pad//2)) 
                         else:
-                            if d < (self.h_pad/2):
-                                self.degree = int((self.NB)*d/(self.h_pad//2))
-
-                            else:
-                                self.degree = self.NB
-                            
+                            self.degree = self.ML
                     else:
-                        self.degree = 0
-
-                elif self.x_ball == self.x_pad - self.r_ball:
-                    d = int(abs(self.y_pad + (self.h_pad/2) - self.y_ball))
+                        self.degree = 90
 
 
-                    if d != 0:
-                        if self.vy >= 0:
-                            if d < (self.h_pad/2):
-                                self.degree = int(180+(self.MT-180)*d/(self.h_pad//2))
-                            else:
-                                self.degree  = self.MT
+            elif self.x_ball == self.x_pad + self.r_ball + self.w_pad:
+                d = int(abs(self.y_pad + (self.h_pad/2) - self.y_ball))
+
+                if d != 0:
+                    if self.vy >= 0:
+
+                        if d < (self.h_pad/2):
+                            self.degree = int(360+(self.NT-360)*d/(self.h_pad//2))
                         else:
-                            if d < (self.h_pad/2):
-                                self.degree = int((self.MB-180)*d/(self.h_pad//2))
-
-                            else:
-                                self.degree = self.MT
-                            
+                            self.degree = self.NT
+                        
                     else:
-                        self.degree = 180
+                        if d < (self.h_pad/2):
+                            self.degree = int((self.NB)*d/(self.h_pad//2))
 
-            if self.degree:
-                self.angle = math.radians(self.degree)
-                self.trig_multiplier()
+                        else:
+                            self.degree = self.NB
+                        
+                else:
+                    self.degree = 0
+
+            elif self.x_ball == self.x_pad - self.r_ball:
+                d = int(abs(self.y_pad + (self.h_pad/2) - self.y_ball))
+
+
+                if d != 0:
+                    if self.vy >= 0:
+                        if d < (self.h_pad/2):
+                            self.degree = int(180+(self.MT-180)*d/(self.h_pad//2))
+                        else:
+                            self.degree  = self.MT
+                    else:
+                        if d < (self.h_pad/2):
+                            self.degree = int((self.MB-180)*d/(self.h_pad//2))
+
+                        else:
+                            self.degree = self.MT
+                        
+                else:
+                    self.degree = 180
+
+        if self.degree:
+            self.angle = math.radians(self.degree)
+            self.trig_multiplier()
+
     
     def update(self, x_pad: float):
 
@@ -223,11 +225,13 @@ class Ball:
         self.x_pad = x_pad
 
 
+
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             if not self.launch and self.ball_in_horbounds_of_paddle(self.x_ball):
                 self.trig_multiplier ()
                 self.vy = self.start_acc*self.sin_angle
-                self.acc_y = self.G*(-1)
+                if self.degree != 180 or self.degree !=0:
+                    self.acc_y = self.G*(-1)
                 self.vx = -self.start_acc*self.cos_angle
 
             self.launch = True
@@ -238,21 +242,24 @@ class Ball:
 
             # Paddle Collsion
             if self.ball_in_horbounds_of_paddle(self.x_ball) and self.y_ball ==self.start_yloc:
+                
                 #at the top of paddle
                 self.x_ball = new_x_ball
                 self.y_ball = new_y_ball
                 self.vy += (self.acc_y + self.G)
 
-            elif self.x_ball == past_pad  - self.r_ball or self.x_ball == past_pad +self.w_pad + self.r_ball:
+            elif self.x_ball == past_pad - self.r_ball or self.x_ball == past_pad +self.w_pad + self.r_ball:
                 self.x_ball = new_x_ball
                 self.y_ball = new_y_ball
                 self.vy += (self.acc_y + self.G)
+
 
 
             elif self.ball_in_horbounds_of_paddle(self.x_ball) and (
                 self.y_ball < self.start_yloc < new_y_ball  and 
                 self.ball_in_horbounds_of_paddle(new_x_ball)
             ): # above the paddle and it surpassed the paddle
+            
                 self.y_ball = self.start_yloc
                 self.x_ball = new_x_ball
                 self.update_angle()
@@ -261,6 +268,7 @@ class Ball:
                 self.vy = self.start_acc*self.sin_angle
 
             elif self.vx != 0:
+                
                 if self.y_ball >= self.h_pad + self.y_pad + self.r_ball:
                     top =self.intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.x_pad - self.r_ball,
                         self.y_pad- self.r_ball),(self.x_pad +self.w_pad +self.r_ball,self.y_pad- self.r_ball))
@@ -291,16 +299,58 @@ class Ball:
 
                     self.y_ball = side[1]
                     self.update_angle()
-                    self.vx = (-1)*self.vx -self.start_acc*self.cos_angle
+                    self.vx = -self.start_acc*self.cos_angle
                     self.vy = self.start_acc*self.sin_angle
 
                     return
-                # will go through the side of the paddle
-                self.x_ball = new_x_ball
-                self.y_ball = new_y_ball
-                self.vy += (self.acc_y + self.G)
+                
+                if self.ball_in_horbounds_of_paddle(self.x_ball) and  self.y_pad - self.r_ball <=self.y_ball <= self.y_pad + self.h_pad + self.r_ball:
+                    if self.x_ball >  self.w_pad + self.x_pad: # on the right side of paddle
+                        
+                        if self.x_pad + self.w_pad > self.w_layout - 2*self.r_ball:
+                            self.y_ball = self.start_yloc 
+                            self.x_ball = self.w_layout - self.r_ball
+                            self.update_angle()
+                            self.acc_y = -self.G
+                            self.vx = -self.start_acc*self.cos_angle
+                            self.vy = self.start_acc*self.sin_angle
+                        else:
+                            self.x_ball = self.x_pad +self.w_pad + self.r_ball
+                            self.update_angle()
+                            self.vx = -self.start_acc*self.cos_angle
+                            self.vy = self.start_acc*self.sin_angle
+                            self.x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)
+                            self.y_ball = self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)
+
+                    else:
+                       
+                        if self.x_pad < 2*self.r_ball:
+                            self.y_ball = self.start_yloc
+                            self.x_ball = self.r_ball
+                            self.update_angle()
+                            self.acc_y = -self.G
+                            self.vx = -self.start_acc*self.cos_angle
+                            self.vy = self.start_acc*self.sin_angle
+
+                        else:
+
+                            self.x_ball = self.x_pad - self.r_ball
+                            self.update_angle()
+                            self.vx = -self.start_acc*self.cos_angle
+                            self.vy = self.start_acc*self.sin_angle
+                            self.x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)
+                            self.y_ball = self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)
+                            
+
+
+                else:
+                    
+                    self.x_ball = new_x_ball
+                    self.y_ball = new_y_ball
+                    self.vy += (self.acc_y + self.G)
 
             else:
+        
                 if self.ball_in_horbounds_of_paddle(new_x_ball) and (
                     self.start_yloc <= new_y_ball <= self.y_pad + self.h_pad + self.r_ball):
 
@@ -327,8 +377,8 @@ class Ball:
                 self.vy += (self.acc_y + self.G)
                 self.vx *= -1
 
-            elif self.x_ball + 2> self.w_layout:
-                self.x_ball_ball = self.w_layout - self.r_ball
+            elif self.x_ball  +self.r_ball> self.w_layout:
+                self.x_ball = self.w_layout - self.r_ball
                 self.vy += (self.acc_y + self.G)
                 self.vx *= -1
 
@@ -343,9 +393,6 @@ class Ball:
                     self.vy = 0
                     self.acc_y = -self.G
                     self.vx = 0
-
-        else:
-            self.update_angle()
 
         else:
             self.update_angle()
