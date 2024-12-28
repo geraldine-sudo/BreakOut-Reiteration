@@ -52,42 +52,7 @@ class Ball:
         self.cos_angle = 1
 
         #bricks
-        """stage 1"""
-        self.bricks = [
-                        Bricks(25 + 5, 40, '1', '1', 5, 21),
-                        Bricks(50 + 5, 45, '1', '1', 5, 21),
-                        Bricks(75 + 5, 40, '1', '1', 5, 21),
-                        Bricks(95 + 5, 25, '1', '1', 5, 21),
-                        Bricks(5 + 5, 25, '1', '1', 5, 21),  # 2 hits
-                        Bricks(50 + 5, 10, '1', '1', 5, 21),
-                        Bricks(75 + 5, 15, '1', '1', 5, 21),  # op hits
-                        Bricks(25 + 5, 15, '1', '1', 5, 21),
-                        #Bricks(10 + 1, 75, '1', '1', 14, 15), #brown spider
-                        #Bricks(96 + 1, 65, '1', '1', 15, 16) # spider with ball
-
-                    ]
-        
-        """stage 2
-        self.bricks =[
-                        Bricks(10, 20, '1', '1', 15, 15),
-                        Bricks(30, 25, '1', '1', 15, 15),
-                        Bricks(55, 25, '1', '1', 15, 15),
-                        Bricks(75, 25, '1', '1', 15, 15),  # ball maker
-                        Bricks(100, 25, '1', '1', 15, 15),
-                        Bricks(18, 115, '1', '1', 15, 15),  # 3 hits
-                        Bricks(65, 85, '1', '1', 15, 15),
-                        Bricks(45, 90, '1', '1', 15, 15),
-                        Bricks(25, 75, '1', '1', 15, 15),
-                        Bricks(95, 90, '1', '1', 15, 15)
-                    ]"""
-        
-        """stage 3
-        self.bricks = [
-                        Bricks(11, 30, '1', '1', 6, 12),
-                        Bricks(21, 65, '1', '1', 6, 12),  # 2 hits
-                        Bricks(91, 65, '1', '1', 6, 12),  # ball maker
-                        Bricks(101, 30, '1', '1', 6, 12)  # op hits
-                    ]"""
+        self.bricks = [Bricks(60, 55, '1')]
 
 
     def trig_multiplier(self):
