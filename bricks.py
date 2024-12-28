@@ -58,29 +58,45 @@ def access_json(file: str):
     return brick
 
 class Bricks:
-    def __init__(self, x: int, y: int,  brick_level: str) -> None:
-        brick = access_json('bricks')
-
-        self.x = x 
+    def __init__(self, x: int, y: int, brick_level: str) -> None:
+        self.x = x
         self.y = y
         self.brick_level = brick_level
+        self.alive = True
 
-        self.img: int = brick[brick_level]['img'] 
-        self.w: int = brick[brick_level]['w'] 
-        self.h:int = brick[brick_level]['h'] 
+        # Load brick data once
+        self.brick_data = access_json('bricks')
+        self.update_attributes()
 
-        self.u: int = brick[brick_level]['u']
-        self.v: int = brick[brick_level]['v']
+    def update_attributes(self):
+        """Updates attributes based on the current brick level."""
+        brick = self.brick_data.get(self.brick_level, None)
 
+        if brick:
+            self.img = brick['img']
+            self.w = brick['w']
+            self.h = brick['h']
+            self.u = brick['u']
+            self.v = brick['v']
+        else:
+            # Handle case where brick_level is invalid
+            self.alive = False
+
+    def update(self):
+        if self.brick_level == "0":
+            self.alive = False
+        else:
+            self.update_attributes()
+            
     def draw(self):
         pyxel.blt(self.x, 
-                  self.y, 
-                  self.img, 
-                  self.u,
-                  self.v,
-                  self.w,
-                  self.h,
-                  0)
+                self.y, 
+                self.img, 
+                self.u,
+                self.v,
+                self.w,
+                self.h,
+                0)
         
 # stages = {'Stage1': {'brick_placement': 'stage1.json',
 #                     'background': ('stages', 'Stage1Map'),
