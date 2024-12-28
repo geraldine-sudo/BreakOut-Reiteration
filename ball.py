@@ -3,7 +3,7 @@ import math
 import pyxel
 from bricks import Bricks
 class Ball:
-    def __init__(self, x: float, y: float, w_pad: float, h_pad:float) -> None:
+    def __init__(self, x: float, y: float, w_pad: float, h_pad:float, bricks: None) -> None:
         #layout
         self.w_layout = 120
         self.h_layout = 200
@@ -52,7 +52,7 @@ class Ball:
         self.cos_angle = 1
 
         #bricks
-        self.bricks = [Bricks(60, 55, '1')]
+        self.bricks = bricks
 
 
     def trig_multiplier(self):
@@ -255,32 +255,32 @@ class Ball:
         if self.degree == 180 or self.degree == 360 or self.degree == 0:
             self.acc_y = 0
 
-    def brick_collision(self, new_x_ball: float, new_y_ball: float, brick : Bricks) ->  None | tuple[float,float,float,str, Bricks]:
+    def brick_collision(self, new_x_ball: float, new_y_ball: float, brick : Bricks, brick_num: int) ->  None | tuple[float,float,float,str, Bricks, int]:
         center_ball = (self.x_ball,self.y_ball)
         new_ball_center =(new_x_ball,new_y_ball)
         top_left = (brick.x - self.ball_diameter,brick.y - self.ball_diameter)
         top_right = (brick.x + brick.w, brick.y - self.ball_diameter)
         bottom_left= (brick.x -self.ball_diameter, brick.y + brick.h)
         bottom_right = (brick.x + brick.w, brick.y+brick.h)
-        interesections: list[tuple[float,float,float, str, Bricks]] = []
+        interesections: list[tuple[float,float,float, str, Bricks, int]] = []
         if self.vy > 0:
             extremes = self.get_line_intersection(center_ball, new_ball_center, top_left, top_right)
             if extremes:
-                interesections.append((extremes[0], extremes[1], (extremes[0]-center_ball[0])**2 + (extremes[1]-center_ball[1])**2, "top", brick))
+                interesections.append((extremes[0], extremes[1], (extremes[0]-center_ball[0])**2 + (extremes[1]-center_ball[1])**2, "top", brick,brick_num))
         else:
             extremes = self.get_line_intersection(center_ball, new_ball_center, bottom_left, bottom_right)
             if extremes:
-                interesections.append((extremes[0], extremes[1], (extremes[0]-center_ball[0])**2 + (extremes[1]-center_ball[1])**2, "bottom", brick))
+                interesections.append((extremes[0], extremes[1], (extremes[0]-center_ball[0])**2 + (extremes[1]-center_ball[1])**2, "bottom",brick, brick_num))
             
         if self.vx <= 0:
             
             side = self.get_line_intersection(center_ball, new_ball_center, top_right, bottom_right)
             if side:
-                interesections.append((side[0], side[1], (side[0]-center_ball[0])**2 + (side[1]-center_ball[1])**2, "right", brick))
+                interesections.append((side[0], side[1], (side[0]-center_ball[0])**2 + (side[1]-center_ball[1])**2, "right", brick, brick_num))
         elif self.vx>0:
             side = self.get_line_intersection(center_ball, new_ball_center, top_left, bottom_left)
             if side:
-                interesections.append((side[0], side[1], (side[0]-center_ball[0])**2 + (side[1]-center_ball[1])**2, "left", brick))
+                interesections.append((side[0], side[1], (side[0]-center_ball[0])**2 + (side[1]-center_ball[1])**2, "left", brick, brick_num))
             
         return None if len(interesections) <= 0 else sorted(interesections, key = lambda b: b[2])[0]
 
@@ -309,17 +309,16 @@ class Ball:
             new_y_ball = self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)
             new_x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)
 
-            if self.degree == 0:
-                print(f"vx: {self.vx},  vy: {self.vy}, newx : {new_x_ball}, newy: {new_y_ball}")
-
 
             #Bricks collision
 
-            ball_bricks_collide = min((pt for b in self.bricks if (pt := self.brick_collision(new_x_ball, new_y_ball, b))),
-                            default=None, key=lambda x: x[2])
+            ball_bricks_collide= ball_bricks_collide = min((pt for n, b in enumerate(self.bricks) if b.alive and (pt := self.brick_collision(new_x_ball, new_y_ball, b, n))
+                                                                ),default=None,key=lambda x: x[2])
+
             
             if ball_bricks_collide:
-                print(1)
+
+                self.bricks[ball_bricks_collide[5]].brick_level = str(int(self.bricks[ball_bricks_collide[5]].brick_level) -1)
 
                 if ball_bricks_collide[3] == "top":
                     self.x_ball = ball_bricks_collide[0] 
@@ -343,8 +342,6 @@ class Ball:
                     self.update_angle("right", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
                     self.vy = self.start_acc*self.sin_angle
                     self.vx = -self.start_acc*self.cos_angle
-                    if self.degree == 0:
-                        print(self. cos_angle, self.acc_y, self.vx, f"new_y_ball {self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)} ew_x_ball:{self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)} brickx {ball_bricks_collide[4].x} bricky {ball_bricks_collide[4].y}")
 
                 else:
                     self.x_ball = ball_bricks_collide[0]
@@ -473,9 +470,7 @@ class Ball:
 
     def draw(self):
 
-        print(self.x_ball,self.y_ball, self.degree)
 
-        # In the draw method:
         for  (tx, ty) in self.trail:
             pyxel.rect(tx+ self.r_ball, ty, 3.5//2, 3.5//2, pyxel.COLOR_WHITE)
 
