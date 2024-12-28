@@ -245,9 +245,11 @@ class Ball:
                     else:
                         self.degree = 270
 
-        if self.degree:
-            self.angle = math.radians(self.degree)
-            self.trig_multiplier()
+        
+        self.angle = math.radians(self.degree)
+        self.trig_multiplier()
+        if self.degree == 180 or self.degree == 360 or self.degree == 0:
+            self.acc_y = 0
 
     def brick_collision(self, new_x_ball: float, new_y_ball: float, brick : Bricks) ->  None | tuple[float,float,float,str, Bricks]:
 
@@ -306,6 +308,9 @@ class Ball:
             new_y_ball = self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)
             new_x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)
 
+            if self.degree == 0:
+                print(f"vx: {self.vx},  vy: {self.vy}, newx : {new_x_ball}, newy: {new_y_ball}")
+
 
             #Bricks collision
 
@@ -313,6 +318,7 @@ class Ball:
                             default=None, key=lambda x: x[2])
             
             if ball_bricks_collide:
+                print(1)
 
                 if ball_bricks_collide[3] == "top":
                     self.x_ball = ball_bricks_collide[0]
@@ -336,6 +342,9 @@ class Ball:
                     self.update_angle("right", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
                     self.vy = self.start_acc*self.sin_angle
                     self.vx = -self.start_acc*self.cos_angle
+                    if self.degree == 0:
+                        print(self. cos_angle, self.acc_y, self.vx, f"new_y_ball {self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)} ew_x_ball:{self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)} brickx {ball_bricks_collide[4].x} bricky {ball_bricks_collide[4].y}")
+
                 else:
                     self.x_ball = ball_bricks_collide[0]
                     self.y_ball = ball_bricks_collide[1]
@@ -467,6 +476,8 @@ class Ball:
 
     def draw(self):
 
+        print(self.x_ball,self.y_ball, self.degree)
+
         # In the draw method:
         for  (tx, ty) in self.trail:
             pyxel.rect(tx+ self.r_ball, ty, self.r_ball//2, self.r_ball//2, pyxel.COLOR_WHITE)
@@ -488,3 +499,5 @@ class Ball:
 
             angled_line = pyxel.line(self.x_ball,self.y_ball,x2,y2, pyxel.COLOR_BLACK)
             # angled_line = pyxel.line(self.x_ball,self.y_ball,x2,y2, pyxel.COLOR_WHITE)
+
+    
