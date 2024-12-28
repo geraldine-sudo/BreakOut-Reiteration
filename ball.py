@@ -52,7 +52,7 @@ class Ball:
 
         #bricks
 
-        self.bricks = [Bricks(25, 40, '1'), Bricks(50, 45, '1'), Bricks(75, 40, '1'), Bricks(95, 25, '1'), Bricks(5, 25, '1'), Bricks(50, 10, '6'), Bricks(75, 15, '1'), Bricks(25, 15, '7'), ]
+        self.bricks = [Bricks(60, 55, '1')]
 
     def trig_multiplier(self):
         if self.degree == 90:
@@ -309,7 +309,8 @@ class Ball:
             new_x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)
 
             if self.degree == 0:
-                print(f"vx: {self.vx},  vy: {self.vy}, newx : {new_x_ball}, newy: {new_y_ball}")
+                # print(f"vx: {self.vx},  vy: {self.vy}, newx : {new_x_ball}, newy: {new_y_ball}")
+                ...
 
 
             #Bricks collision
@@ -318,7 +319,7 @@ class Ball:
                             default=None, key=lambda x: x[2])
             
             if ball_bricks_collide:
-                print(1)
+                # print(1)
 
                 if ball_bricks_collide[3] == "top":
                     self.x_ball = ball_bricks_collide[0]
@@ -343,7 +344,8 @@ class Ball:
                     self.vy = self.start_acc*self.sin_angle
                     self.vx = -self.start_acc*self.cos_angle
                     if self.degree == 0:
-                        print(self. cos_angle, self.acc_y, self.vx, f"new_y_ball {self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)} ew_x_ball:{self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)} brickx {ball_bricks_collide[4].x} bricky {ball_bricks_collide[4].y}")
+                        ...
+                        # print(self. cos_angle, self.acc_y, self.vx, f"new_y_ball {self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)} ew_x_ball:{self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)} brickx {ball_bricks_collide[4].x} bricky {ball_bricks_collide[4].y}")
 
                 else:
                     self.x_ball = ball_bricks_collide[0]
@@ -476,7 +478,7 @@ class Ball:
 
     def draw(self):
 
-        print(self.x_ball,self.y_ball, self.degree)
+        # print(self.x_ball,self.y_ball, self.degree)
 
         # In the draw method:
         for  (tx, ty) in self.trail:

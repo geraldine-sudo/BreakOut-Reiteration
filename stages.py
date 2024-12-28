@@ -52,23 +52,23 @@ class Stage1Map:
         pyxel.blt(45, 45, 0, 24, 48, 35, 16, 0)
 
         # candles brick
-        pyxel.blt(25, 40, 0, 0, 32, 20, 35, 0)
+        pyxel.blt(25, 40, 0, 0, 32, 20, 25, 0)
 
-        pyxel.blt(50, 45, 0, 0, 32, 20, 35, 0)
+        pyxel.blt(50, 45, 0, 0, 32, 20, 25, 0)
 
-        pyxel.blt(75, 40, 0, 0, 32, 20, 35, 0)
+        pyxel.blt(75, 40, 0, 0, 32, 20, 25, 0)
 
-        pyxel.blt(95, 25, 0, 0, 32, 20, 35, 0)
+        pyxel.blt(95, 25, 0, 0, 32, 20, 25, 0)
 
         # 2 hits
         pyxel.blt(5, 25, 0, 112, 0, 20, 25, 0)
 
-        pyxel.blt(50, 10, 0, 0, 32, 20, 35, 0)
+        pyxel.blt(50, 10, 0, 0, 32, 20, 25, 0)
 
         # op hits
         pyxel.blt(75, 15, 0, 136, 0, 20, 25, 0)
 
-        pyxel.blt(25, 15, 0, 0, 32, 20, 35, 0)
+        pyxel.blt(25, 15, 0, 0, 32, 20, 25, 0)
 
         # fork
         pyxel.blt(5, 150, 0, 64, 48, 16, 64, 0)
@@ -77,14 +77,14 @@ class Stage1Map:
         pyxel.circ(60, 210, 50, pyxel.COLOR_WHITE)
         pyxel.circb(60, 210, 35, pyxel.COLOR_NAVY)
         
-        # spider
-        pyxel.line(103, 0, 103, 70, pyxel.COLOR_GRAY)
-        # ball maker
-        pyxel.blt(95, 65, 0, 80, 48, 16, 25, 0)
+        # # spider
+        # pyxel.line(103, 0, 103, 70, pyxel.COLOR_GRAY)
+        # # ball maker
+        # pyxel.blt(95, 65, 0, 80, 48, 16, 25, 0)
 
-        pyxel.line(18, 0, 18, 80, pyxel.COLOR_GRAY)
-        # 3 hits
-        pyxel.blt(10, 75, 0, 96, 48, 16, 16, 0)
+        # pyxel.line(18, 0, 18, 80, pyxel.COLOR_GRAY)
+        # # 3 hits
+        # pyxel.blt(10, 75, 0, 96, 48, 16, 16, 0)
 
 
 class Stage2Map:
@@ -136,30 +136,16 @@ class Stage2Map:
 
         # bricks
 
-        # 2hits = 112, 32
-
-        pyxel.blt(10, 20, 0, 112, 32, 16, 16, 0)
-
-        pyxel.blt(30, 25, 0, 112, 32, 16, 16, 0)
-
-        pyxel.blt(55, 25, 0, 112, 32, 16, 16, 0)
-
-        # ball maker
-        pyxel.blt(75, 25, 0, 64, 104, 16, 16, 0)
-
-        pyxel.blt(100, 25, 0, 112, 32, 16, 16, 0)
-
-        # 3 hits
-        pyxel.blt(18, 115, 0, 80, 104, 16, 16, 0)
-
-        pyxel.blt(65, 85, 0, 48, 120, 16, 16, 0)
-
-        pyxel.blt(45, 90, 0, 48, 120, 16, 16, 0)
-
-        pyxel.blt(25, 75, 0, 48, 120, 16, 16, 0)
-
-        # op hits
-        pyxel.blt(95, 90, 0, 128, 32, 16, 16, 0)
+        pyxel.blt(10, 20, 0, 16, 104, 16, 16, 0)
+        pyxel.blt(30, 25, 0, 48, 80, 16, 16, 0)
+        pyxel.blt(55, 25, 0, 48, 104, 16, 16, 0)
+        pyxel.blt(75, 25, 0, 32, 104, 16, 16, 0)
+        pyxel.blt(100, 25, 0, 16, 120, 16, 16, 0)
+        # pyxel.blt(18, 115, 0, 32, 120, 16, 16, 0)
+        # pyxel.blt(65, 85, 0, 48, 120, 16, 16, 0)
+        # pyxel.blt(45, 90, 0, 32, 104, 16, 16, 0)
+        # pyxel.blt(25, 75, 0, 16, 120, 16, 16, 0)
+        # pyxel.blt(95, 90, 0, 48, 80, 16, 16, 0)
 
 
 class Stage3Map:
@@ -187,24 +173,26 @@ class Stage3Map:
         
         # cocoons 
 
-        # 3 hits
-        pyxel.line(14, 0, 14, 40, pyxel.COLOR_BLACK)
-        pyxel.blt(10, 30, 0, 72, 0, 8, 16, 0)
+        # # 3 hits
+        # pyxel.line(14, 0, 14, 40, pyxel.COLOR_BLACK)
+        # pyxel.blt(10, 30, 0, 72, 0, 8, 16, 0)
 
-        # 2 hits
-        pyxel.line(24, 0, 24, 70, pyxel.COLOR_BLACK)
-        pyxel.blt(20, 65, 0, 24, 0, 8, 16, 0)
+        # # 2 hits
+        # pyxel.line(24, 0, 24, 70, pyxel.COLOR_BLACK)
+        # pyxel.blt(20, 65, 0, 24, 0, 8, 16, 0)
 
-        # ball maker
-        pyxel.line(94, 0, 94, 66, pyxel.COLOR_BLACK)
-        pyxel.blt(90, 65, 0, 64, 0, 8, 16, 0)
+        # # ball maker
+        # pyxel.line(94, 0, 94, 66, pyxel.COLOR_BLACK)
+        # pyxel.blt(90, 65, 0, 64, 0, 8, 16, 0)
 
-        # op hits
-        pyxel.line(104, 0, 104, 40, pyxel.COLOR_BLACK)
-        pyxel.blt(100, 30, 0, 32, 0, 8, 16, 0)
+        # # op hits
+        # pyxel.line(104, 0, 104, 40, pyxel.COLOR_BLACK)
+        # pyxel.blt(100, 30, 0, 32, 0, 8, 16, 0)
+
+        # other mother
+        pyxel.blt(30, 25, 0, 0, 152, 60, 65, 0)
 
         # text bg
-        pyxel.blt(30, 25, 0, 0, 152, 60, 65, 0)
         pyxel.blt(5, 12, 0, 0, 224, 50, 16, 0)
 
         for x in range(12, 80, 12):

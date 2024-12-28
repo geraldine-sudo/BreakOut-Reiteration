@@ -1,150 +1,132 @@
 import pyxel
 import json
+from pprint import pprint
 
-# stages = {1: { 'Stage1': {
-#                         "score": 50,
-#                         "hits": 1,
-#                         "img": 0,
-#                         "u": 0,
-#                         "v": 32,
-#                         "w": 20,
-#                         "h": 25
-#                         },
-#                 'Stage2': {"score": 50,
-#                         "hits": 1,
-#                         "img": 0,
-#                         "u": 48,
-#                         "v": 120,
-#                         "w": 16,
-#                         "h": 16
-#                 },
-#         2: { 'Stage1': {"score": 100,
-#                         "hits": 2,
-#                         "img": 0,
-#                         "u": 112,
-#                         "v": 0,
-#                         "w": 20,
-#                         "h": 25
-#                 },
-#             'Stage2': {"score": 100,
-#                         "hits": 2,
-#                         "img": 0,
-#                         "u": 112,
-#                         "v": 32,
-#                         "w": 16,
-#                         "h": 16},
-#             'Stage3': {"score": 100,
-#                         "hits": 2,
-#                         "img": 0,
-#                         "u": 24,
-#                         "v": 0,
-#                         "w": 8,
-#                         "h": 16}
-#                 },
-#         3: { 'Stage1': {"score": 150,
-#                             "hits": 3,
-#                             "img": 0,
-#                             "u": 96,
-#                             "v": 48,
-#                             "w": 16,
-#                             "h": 16
+# brick_specs = {1: {
+#                     "score": 50,
+#                     "hits": 1,
+#                     "img": 0,
+#                     "u": 80,
+#                     "v": 64,
+#                     "w": 16,
+#                     "h": 16
 #                     },
-#             'Stage2': {"score": 150,
-#                         "hits": 3,
-#                         "img": 0,
-#                         "u": 80,
-#                         "v": 104,
-#                         "w": 16,
-#                         "h": 16},
-#             'Stage3': {"score": 150,
-#                         "hits": 3,
-#                         "img": 0,
-#                         "u": 72,
-#                         "v": 0,
-#                         "w": 8,
-#                         "h": 16}
+#         2: {        "score": 100,
+#                     "hits": 2,
+#                     "img": 0,
+#                     "u": 112,
+#                     "v": 64,
+#                     "w": 16,
+#                     "h": 16
+#                },
+#         3: {        "score": 150,
+#                     "hits": 3,
+#                     "img": 0,
+#                     "u": 96,
+#                     "v": 48,
+#                     "w": 16,
+#                     "h": 16
 #                     },
-#         4: { 'Stage1': {"score": 0,
-#                             "hits": -1,
-#                             "img": 0,
-#                             "u": 136,
-#                             "v": 0,
-#                             "w": 20,
-#                             "h": 25
+#         4: {        "score": 0,
+#                     "hits": -1,
+#                     "img": 0,
+#                     "u": 80,
+#                     "v": 80,
+#                     "w": 16,
+#                     "h": 16
 #                     },
-#             'Stage2': {"score": 0,
-#                         "hits": -1,
-#                         "img": 0,
-#                         "u": 128,
-#                         "v": 32,
-#                         "w": 16,
-#                         "h": 16
-#                         },
-#             'Stage3': {"score": 0,
-#                         "hits": -1,
-#                         "img": 0,
-#                         "u": 32,
-#                         "v": 0,
-#                         "w": 8,
-#                         "h": 16}
-#                     },
-#         5: { 'Stage1': {"score": 50,
-#                             "hits": 1,
-#                             "img": 0,
-#                             "u": 80,
-#                             "v": 48,
-#                             "w": 16,
-#                             "h": 25
-#                     },
-#             'Stage2': {"score": 0,
-#                         "hits": 1,
-#                         "img": 0,
-#                         "u": 64,
-#                         "v": 104,
-#                         "w": 16,
-#                         "h": 16
-#                         },
-#             'Stage3': {"score": 0,
-#                         "hits": 1,
-#                         "img": 0,
-#                         "u": 64,
-#                         "v": 0,
-#                         "w": 8,
-#                         "h": 16}
+#         5: {        "score": 0,
+#                     "hits": 1,
+#                     "img": 0,
+#                     "u": 80,
+#                     "v": 48,
+#                     "w": 16,
+#                     "h": 16
 #                     }
+# }
 
-# }}
+#store brick specifications in json file
+# with open('bricks.json', 'w') as f:
+#     json.dump(brick_specs, f)
 
-# store stages in json file
-# with open('stages.json', 'w') as f:
-#     json.dump(stages, f)
-stage = {}
+def access_json(file: str):
+    brick = {}
 
-with open('stages.json', 'r') as f:
-    stage = json.load(f)
+    with open(file+'.json', 'r') as f:
+        brick = json.load(f)
 
-# reach into data
-# print(stage['1']['Stage1']['u'])
+    return brick
 
 class Bricks:
-    def __init__(self, x: int, y: int,  brick_level: str, stage_level: str) -> None:
-        self.x = x # +5
+    def __init__(self, x: int, y: int,  brick_level: str) -> None:
+        brick = access_json('bricks')
+
+        self.x = x 
         self.y = y
         self.brick_level = brick_level
 
-        # self.img: int = stage[brick_level][stage_level]['img']
-        self.w: int = stage[brick_level][stage_level]['w'] #=5
-        self.h:int = stage[brick_level][stage_level]['h'] #=21
+        self.img: int = brick[brick_level]['img'] 
+        self.w: int = brick[brick_level]['w'] 
+        self.h:int = brick[brick_level]['h'] 
 
-        self.u: int = stage[brick_level][stage_level]['u']
-        self.v: int = stage[brick_level][stage_level]['v']
+        self.u: int = brick[brick_level]['u']
+        self.v: int = brick[brick_level]['v']
 
     def draw(self):
         pyxel.blt(self.x, 
                   self.y, 
-                  0, 
+                  self.img, 
                   self.u,
                   self.v,
                   self.w,
-                  self.h, 
+                  self.h,
                   0)
+        
+# stages = {'Stage1': {'brick_placement': 'stage1.json',
+#                     'background': ('stages', 'Stage1Map'),
+#                     'tile1': ['1', '2', '4']
+#                     # make separate condition for ball maker and 3 hits
+#                     },
+#            'Stage2': {'brick_placement': 'stage2.json',
+#                     'background': ('stages', 'Stage2Map'),
+#                     'tile1': ['1', '2', '3', '4', '5']
+#                     },
+#            'Stage3': {'brick_placement': 'stage3.json',
+#                     'background': ('stages', 'Stage3Map'),
+#                     'tile1': ['1', '2', '3', '4', '5']
+#                     # make separate condition for other mother
+#                     }}
+
+# store stages in json file
+# with open('stages.json', 'w') as f:
+#     json.dump(stages, f)
+
+# test
+
+# with open('stage1.json', 'r') as f:
+#     for i in f:
+#         for j in i:
+#             print(j)
+
+# pprint(stage)
+
+def check_levels():
+    stage = {}
+    with open('stages.json', 'r') as f:
+        stage = json.load(f)
+    return stage
+
+def load_level(level: str):
+    this_level = []
+    possible_bricks = ["1", "2", "3", "4", "5"]
+    # Load the level file, and read through it, adding bricks to this_level
+    with open(level+'.json', 'r') as f:
+        y = 0
+        for i in f:
+            x = 0
+            for j in i:
+                if j in possible_bricks:
+                    this_level.append(Bricks(x, y, j))
+                x += 16
+            y += 16
+    return this_level
