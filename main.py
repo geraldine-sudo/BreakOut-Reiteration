@@ -13,7 +13,7 @@ class Breakout:
         pyxel.init(self.w_layout, self.h_layout, title='Breakout')
 
         self.paddle = Paddle()
-        self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-3, self.paddle.w_paddle, self.paddle.h_paddle)
+
         
         pyxel.load('assets.pyxres')
 
@@ -27,6 +27,8 @@ class Breakout:
         self.bricks = None
 
         self.load_new_game()
+
+        self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-3, self.paddle.w_paddle, self.paddle.h_paddle, self.bricks)
 
         pyxel.run(self.update, self.draw)
 
@@ -49,6 +51,8 @@ class Breakout:
     def update(self):
         self.paddle.update()
         self.ball.update(self.paddle.x_paddle)
+        for b in self.bricks:
+            b.update()
 
     def draw(self):
         pyxel.cls(0)
@@ -77,7 +81,9 @@ class Breakout:
         self.ball.draw()
 
         for brick in self.bricks:
-            brick.draw()
+            if brick.alive:
+                brick.draw()
+
         
         pyxel.mouse(visible=True)
 
