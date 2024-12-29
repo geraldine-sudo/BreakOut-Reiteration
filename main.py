@@ -2,7 +2,7 @@
 import pyxel
 from paddle import Paddle
 from ball import Ball
-from bricks import check_levels, load_level
+from bricks import load_level
 from stages import Stage1Map, Stage2Map, Stage3Map
 
 class Breakout:
@@ -20,23 +20,26 @@ class Breakout:
         self.stagemaps = ['stage1', 'stage2', 'stage3']
         self.stage_x = 0
 
-        self.levels = check_levels()
-
         self.curlevel = self.stagemaps[self.stage_x]
 
         self.bricks = None
 
-        self.load_new_game()
+        self.lives = 2
+        self.lives_display = None
+
+        self.load_restart()
 
         self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-3, self.paddle.w_paddle, self.paddle.h_paddle, self.bricks)
 
         pyxel.run(self.update, self.draw)
 
-    def load_new_game(self):
+    def load_restart(self):
         self.stage_x = 0
         self.curlevel = self.stagemaps[self.stage_x]
 
-        self.bricks = load_level(self.curlevel) 
+        self.bricks, self.lives_display = load_level(self.curlevel, self.lives) 
+
+        print(len(self.lives_display))
 
         # set starting point here
         # set game status here
@@ -46,7 +49,6 @@ class Breakout:
         self.curlevel = self.stagemaps[self.stage_x]
 
         self.bricks = load_level(self.curlevel) 
-
 
     def update(self):
         self.paddle.update()
@@ -58,24 +60,12 @@ class Breakout:
         pyxel.cls(0)
         if self.curlevel == 'stage1':
             Stage1Map().draw()
-            
-            pyxel.blt(105, 187, 0, 0, 16, 8, 8, 0)
-            pyxel.blt(95, 187, 0, 0, 16, 8, 8, 0)
-            pyxel.blt(85, 187, 0, 0, 16, 8, 8, 0)
-
+        
         elif self.curlevel == 'stage2':
             Stage2Map().draw()
 
-            pyxel.blt(105, 187, 0, 0, 16, 8, 8, 0)
-            pyxel.blt(95, 187, 0, 0, 16, 8, 8, 0)
-            pyxel.blt(85, 187, 0, 0, 16, 8, 8, 0)
-
         elif self.curlevel == 'stage3':
             Stage3Map().draw()
-
-            pyxel.blt(100, 180, 0, 0, 120, 16, 16, 0)
-            pyxel.blt(85, 180, 0, 0, 120, 16, 16, 0)
-            pyxel.blt(70, 180, 0, 0, 120, 16, 16, 0)
             
         self.paddle.draw()
         self.ball.draw()
@@ -83,6 +73,9 @@ class Breakout:
         for brick in self.bricks:
             if brick.alive:
                 brick.draw()
+
+        for i in self.lives_display:
+            i.draw()
 
         
         pyxel.mouse(visible=True)
