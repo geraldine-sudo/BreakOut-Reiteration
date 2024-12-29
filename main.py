@@ -23,8 +23,7 @@ class Breakout:
         self.curlevel = self.stagemaps[self.stage_x]
 
         self.bricks = None
-
-        self.lives = 2
+        self.lives = 3
         self.lives_display = None
 
         self.load_restart()
@@ -38,8 +37,6 @@ class Breakout:
         self.curlevel = self.stagemaps[self.stage_x]
 
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives) 
-
-        print(len(self.lives_display))
 
         # set starting point here
         # set game status here

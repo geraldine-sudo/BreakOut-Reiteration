@@ -193,22 +193,3 @@ def load_level(level: str, lives: int):
                 x += 16
             y += 16
     return this_level, lives_display
-
-
-def load_lives(level: str, lives: int):
-    this_level_lives = []
-
-    possible_bricks = ["6", "7"]
-
-    with open('stages.json', 'r') as f:
-        stage = json.load(f)
-        y = 0
-        for i in stage[level]['brick_placement']:
-            x = 0
-            for j in i:
-                if j in possible_bricks:
-                    this_level_lives.append(Bricks(x, y, j))
-                
-                x += 16
-            y += 16
-    return this_level_lives
