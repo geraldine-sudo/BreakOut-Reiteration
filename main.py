@@ -57,7 +57,6 @@ class Breakout:
 
     def draw(self):
         pyxel.cls(0)
-        print(self.lives)
         if self.curlevel == 'stage1':
             Stage1Map().draw()
         
