@@ -9,6 +9,8 @@ class Breakout:
     def __init__(self):
         self.w_layout = 120
         self.h_layout = 200
+        self.ball_diameter = 7
+        self.launch = False
 
         pyxel.init(self.w_layout, self.h_layout, title='Breakout')
 
@@ -28,7 +30,7 @@ class Breakout:
 
         self.load_restart()
 
-        self.ball = Ball(self.w_layout//2, self.paddle.y_paddle-3, self.paddle.w_paddle, self.paddle.h_paddle, self.bricks)
+        self.ball = Ball(self.w_layout//2 -self.ball_diameter//2, self.paddle.y_paddle - self.ball_diameter,self.paddle ,self.bricks, self.lives, self.launch)
 
         pyxel.run(self.update, self.draw)
 
@@ -49,12 +51,13 @@ class Breakout:
 
     def update(self):
         self.paddle.update()
-        self.ball.update(self.paddle.x_paddle)
+        self.ball.update()
         for b in self.bricks:
             b.update()
 
     def draw(self):
         pyxel.cls(0)
+        print(self.lives)
         if self.curlevel == 'stage1':
             Stage1Map().draw()
         
