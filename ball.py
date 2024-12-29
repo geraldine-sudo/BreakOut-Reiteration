@@ -1,29 +1,28 @@
 
 import math
 import pyxel
+from paddle import Paddle
 from bricks import Bricks
 class Ball:
-    def __init__(self, x: float, y: float, w_pad: float, h_pad:float, bricks: None) -> None:
+    def __init__(self, x: float, y: float, paddle: Paddle, bricks: None, life: int, launch: bool) -> None:
         #layout
         self.w_layout = 120
         self.h_layout = 200
         self.G = 5
-        self.launch = False
+        self.launch = launch
+        self.lives = life
 
         # Main Ball Properties
         self.x_ball: float = x
         self.y_ball: float= y
-        self.r_ball = 3.5
-        self.start_yloc = y
         self.ball_diameter = 7
+        self.r_ball = self.ball_diameter /2
+        self.start_yloc = paddle.y_paddle - self.ball_diameter
 
         #paddle properties
-        self.w_pad = w_pad
-        self.h_pad = h_pad
-        self.x_pad = 0
-        self.y_pad = y + self.r_ball
+        self.paddle = paddle
+        self.past_paddle = self.paddle.x_paddle
         self.start_acc = -240
-        self.h_pad = h_pad
 
         #ball properties
         self.acc_y = 0
@@ -32,11 +31,12 @@ class Ball:
         self.vy = 0
         self.v = 0
         self.t = 0
-        self.degree: int| None = None #angle in degrees
-        self.angle = 0 # angle in radians
         self.trail : list[tuple[float,float]] = []
 
         #Angles
+        self.cycle_speed = 2
+        self.degree: int = 0 #angle in degrees
+        self.angle = 0 # angle in radians
         self.MR = 10
         self.ML = 170
         self.NT = 280
@@ -78,8 +78,8 @@ class Ball:
 
     def ball_in_horbounds_of_paddle(self, x:float) -> bool:
 
-            return self.x_pad <= x <= (self.x_pad+ self.w_pad
-            ) or  self.x_pad <= x + self.ball_diameter <= (self.x_pad+ self.w_pad)
+            return self.paddle.x_paddle <= x <= ( self.paddle.x_paddle + self.paddle.w_paddle
+            ) or  self.paddle.x_paddle <= x + self.ball_diameter <= (self.paddle.x_paddle+ self.paddle.w_paddle)
 
     def get_line_intersection(self, p1:tuple[float,float], p2:tuple[float,float], p3:tuple[float,float], p4:tuple[float,float]):
     # Using the line segment intersection formula
@@ -115,24 +115,13 @@ class Ball:
 
         d = 0
         if not self.launch:
-            
-            x1, y1 = pyxel.mouse_x, pyxel.mouse_y
-            x2, y2 = self.x_pad + self.w_pad//2, self.y_pad
-            
-            # Vector difference
-            dx = x1 - x2
-            dy = y2 - y1
-            
-            # Calculate angle in radians and convert to degrees
-            self.angle = math.atan2(dy, dx)
-            self.degree = int(math.degrees(self.angle))
 
-            if self.degree < 0:
-                if pyxel.mouse_x >= self.w_layout//2:
-                    self.degree = 0
+            self.degree +=self.cycle_speed
 
-                else:
-                    self.degree = 180
+            if self. degree == 0 or self.degree == 180:
+                self.cycle_speed *= -1
+            
+
             self.angle = math.radians(self.degree)
             self.trig_multiplier()
 
@@ -200,7 +189,7 @@ class Ball:
 
                 if d != 0:
                     if self.vy >= 0:
-                        if d < (self.h_pad/2):
+                        if d < (self.paddle.h_paddle/2):
                             self.degree = int(180+(self.MT-180)*d/(h/2))
                         else:
                             self.degree  = self.MT
@@ -220,9 +209,9 @@ class Ball:
 
                     if center_x_ball == center_pad:
                         self.degree = 270
-                    elif center_x_ball <= self.x_pad:
+                    elif center_x_ball <= self.paddle.x_paddle:
                         self.degree = self.NL
-                    elif center_x_ball >= self.x_pad + self.w_pad:
+                    elif center_x_ball >= self.paddle.x_paddle + self.paddle.w_paddle:
                         self.degree = self.NR
 
                     else:
@@ -284,11 +273,8 @@ class Ball:
             
         return None if len(interesections) <= 0 else sorted(interesections, key = lambda b: b[2])[0]
 
-    def update(self, x_pad: float):
+    def update(self):
 
-        past_pad = self.x_pad
-
-        self.x_pad = x_pad
 
         self.trail.append((self.x_ball + self.r_ball, self.y_ball + self.r_ball))
 
@@ -304,6 +290,7 @@ class Ball:
                 self.vx = -self.start_acc*self.cos_angle
 
             self.launch = True
+            self.paddle.launch = True
 
         if self.launch:
             new_y_ball = self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)
@@ -315,9 +302,7 @@ class Ball:
             ball_bricks_collide= ball_bricks_collide = min((pt for n, b in enumerate(self.bricks) if b.alive and (pt := self.brick_collision(new_x_ball, new_y_ball, b, n))
                                                                 ),default=None,key=lambda x: x[2])
 
-            
             if ball_bricks_collide:
-
                 self.bricks[ball_bricks_collide[5]].brick_level = str(int(self.bricks[ball_bricks_collide[5]].brick_level) -1)
 
                 if ball_bricks_collide[3] == "top":
@@ -349,6 +334,8 @@ class Ball:
                     self.update_angle("left", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
                     self.vy = self.start_acc*self.sin_angle
                     self.vx = -self.start_acc*self.cos_angle
+
+                self.past_paddle = self.paddle.x_paddle
                 return
                 
             
@@ -362,7 +349,7 @@ class Ball:
                     self.y_ball = new_y_ball
                     self.vy += (self.acc_y + self.G)
 
-                elif self.x_ball == past_pad - self.ball_diameter or self.x_ball == past_pad +self.w_pad:
+                elif self.x_ball == self.past_paddle - self.ball_diameter or self.x_ball == self.past_paddle +self.paddle.w_paddle:
                     self.x_ball = new_x_ball
                     self.y_ball = new_y_ball
                     self.vy += (self.acc_y + self.G)
@@ -374,7 +361,7 @@ class Ball:
                 
                     self.y_ball = self.start_yloc
                     self.x_ball = new_x_ball
-                    self.update_angle("top", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
+                    self.update_angle("top", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
                     self.acc_y = -self.G
                     self.vx = -self.start_acc*self.cos_angle
                     self.vy = self.start_acc*self.sin_angle
@@ -382,36 +369,39 @@ class Ball:
                 elif self.vx != 0:
                     
                     if self.y_ball <= self.start_yloc and self.vy >0:
-                        top =self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.x_pad - self.ball_diameter,
-                            self.y_pad-self.ball_diameter),(self.x_pad +self.w_pad,self.y_pad-self.ball_diameter))
+                        top =self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.paddle.x_paddle - self.ball_diameter,
+                            self.paddle.y_paddle-self.ball_diameter),(self.paddle.x_paddle +self.paddle.w_paddle,self.paddle.y_paddle-self.ball_diameter))
                         
                         if top: # will go through the top of the paddle
                             self.y_ball = self.start_yloc
                             self.x_ball = top[0]
-                            self.update_angle("top", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
+                            self.update_angle("top", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
                             self.acc_y = -self.G
                             self.vx = -self.start_acc*self.cos_angle
                             self.vy = self.start_acc*self.sin_angle
+                            self.past_paddle = self.paddle.x_paddle
                             return
                     
                     if self.vx > 0:
-                        side = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.x_pad -self.ball_diameter,
-                        self.y_pad- self.ball_diameter),(self.x_pad - self.ball_diameter,self.y_pad+self.h_pad))
+                        side = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.paddle.x_paddle -self.ball_diameter,
+                        self.paddle.y_paddle- self.ball_diameter),(self.paddle.x_paddle - self.ball_diameter,self.paddle.y_paddle+self.paddle.h_paddle))
                     else:
-                        side = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.x_pad +self.w_pad,
-                        self.y_pad- self.ball_diameter),(self.x_pad +self.w_pad,self.y_pad+self.h_pad))
+                        side = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.paddle.x_paddle +self.paddle.w_paddle,
+                        self.paddle.y_paddle- self.ball_diameter),(self.paddle.x_paddle +self.paddle.w_paddle,self.paddle.y_paddle+self.paddle.h_paddle))
 
                     if side:
                         self.y_ball = side[1]
                         if self.vx >0:
                             
-                            self.x_ball = self.x_pad - self.ball_diameter
-                            self.update_angle("left", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
+                            self.x_ball = self.paddle.x_paddle - self.ball_diameter
+                            self.update_angle("left", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
                         else:
-                            self.x_ball = self.x_pad +self.w_pad
-                            self.update_angle("right", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
+                            self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle
+                            self.update_angle("right", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
                         self.vx = -self.start_acc*self.cos_angle
                         self.vy = self.start_acc*self.sin_angle
+
+                        self.past_paddle = self.paddle.x_paddle
 
                         return
                           
@@ -423,14 +413,14 @@ class Ball:
                 else:
             
                     if self.ball_in_horbounds_of_paddle(new_x_ball) and (
-                        self.start_yloc <= self.y_ball <= self.y_pad + self.h_pad):
+                        self.start_yloc <= self.y_ball <= self.paddle.y_paddle + self.paddle.h_paddle):
 
-                        if self.x_ball < self.x_pad + self.w_pad // 2:
-                            self.x_ball = self.x_pad - self.ball_diameter
-                            self.update_angle("left", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
+                        if self.x_ball < self.paddle.x_paddle + self.paddle.w_paddle // 2:
+                            self.x_ball = self.paddle.x_paddle - self.ball_diameter
+                            self.update_angle("left", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
                         else:
-                            self.x_ball = self.x_pad + self.w_pad
-                            self.update_angle("right", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
+                            self.x_ball = self.paddle.x_paddle + self.paddle.w_paddle
+                            self.update_angle("right", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
 
                         self.vx = -self.start_acc*self.cos_angle
                         self.vy = self.start_acc*self.sin_angle
@@ -460,13 +450,18 @@ class Ball:
                 self.vy = (-1)*self.vy + (self.acc_y + self.G)
                 
             elif new_y_ball + self.ball_diameter >= self.h_layout:
-                    self.y_ball = self.h_layout - self.ball_diameter
-                    self.vy = 0
-                    self.acc_y = -self.G
-                    self.vx = 0
+                    self.y_ball = self.start_yloc
+                    self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle /2 - self.r_ball
+                    self.lives -=1
+                    self.degree = 0
+                    self.launch = False
+                    self.paddle.launch = False
+
+            self.past_paddle = self.paddle.x_paddle
 
         else:
-            self.update_angle("top", self.x_pad,self.y_pad,self.w_pad,self.h_pad)
+            self.past_paddle = self.paddle.x_paddle
+            self.update_angle("top", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
 
     def draw(self):
 
@@ -478,17 +473,13 @@ class Ball:
 
         if not self.launch and self.degree != None:
 
-            if self.x_ball <= self.x_pad + self.w_pad/2:
-                angle_cyc = pyxel.text(self.x_pad + self.w_pad -10,self.y_pad -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
-                # angle_cyc = pyxel.text(self.x_pad + self.w_pad -10,self.y_pad -2, f"{self.degree}", pyxel.COLOR_WHITE, None)
-            else:
-                angle_cyc = pyxel.text(self.x_pad,self.y_pad -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
-                # angle_cyc = pyxel.text(self.x_pad,self.y_pad -2, f"{self.degree}", pyxel.COLOR_WHITE, None)
+            #angle_cyc = pyxel.text(self.paddle.x_paddle + self.paddle.w_paddle -10,self.paddle.y_paddle -2, f"{self.degree}", pyxel.COLOR_BLACK, None)
+                # angle_cyc = pyxel.text(self.paddle.x_paddle + self.paddle.w_paddle -10,self.paddle.y_paddle -2, f"{self.degree}", pyxel.COLOR_WHITE, None)
             length = 15
-            x2 =  self.w_layout //2+ length * math.cos(self.angle)
-            y2 = self.y_pad - length * math.sin(self.angle)
+            x2 =  self.paddle.x_paddle +self.paddle.w_paddle /2 + length * math.cos(self.angle)
+            y2 = self.paddle.y_paddle - length * math.sin(self.angle)
 
-            angled_line = pyxel.line(self.w_layout//2,self.y_pad,x2,y2, pyxel.COLOR_BLACK)
+            angled_line = pyxel.line(self.paddle.x_paddle +self.paddle.w_paddle //2,self.paddle.y_paddle,x2,y2, pyxel.COLOR_BLACK)
             # angled_line = pyxel.line(self.x_ball,self.y_ball,x2,y2, pyxel.COLOR_WHITE)
 
     
