@@ -1,7 +1,7 @@
 import pyxel
 
 class Paddle:
-    def __init__(self) -> None:
+    def __init__(self,) -> None:
 
         self.w_layout = 120
         self.h_layout = 200
@@ -17,8 +17,6 @@ class Paddle:
 
     def update(self):
 
-        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-            self.launch = True
 
         if self.launch:
 
