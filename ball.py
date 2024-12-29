@@ -454,9 +454,11 @@ class Ball:
                     self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle /2 - self.r_ball
                     self.lives -=1
                     self.degree = 0
+                    self.paddle.x_paddle = self.w_layout// 2 - self.paddle.w_paddle//2
+                    self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle /2 - self.r_ball
                     self.launch = False
                     self.paddle.launch = False
-
+                
             self.past_paddle = self.paddle.x_paddle
 
         else:
