@@ -97,6 +97,7 @@ class Bricks:
         self.image = brick_level
         self.hit  = False
         self.alive = True
+        self.counted = False
 
         # Load brick data once
         self.brick_data = access_json('bricks')
@@ -110,7 +111,7 @@ class Bricks:
             self.v = brick['v']
             self.hits = brick['hits']
             self.score = brick['score']
-        
+
 
     def update_attributes(self):
         """Updates attributes based on the current brick level."""
@@ -126,6 +127,7 @@ class Bricks:
             # Handle case where brick_level is invalid
             self.alive = False
 
+
     def update(self):
         if self.hit == True and self.brick_level != "4":
             self.hits -= 1
@@ -135,7 +137,6 @@ class Bricks:
             if self.brick_level == "3":
                 self.image = str(float(self.image) + 0.1)
                 self.update_attributes()
-
 
     def draw(self):
         pyxel.blt(self.x, 

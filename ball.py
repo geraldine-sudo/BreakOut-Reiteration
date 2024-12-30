@@ -57,11 +57,7 @@ class Ball:
         #bricks
         self.bricks = bricks
 
-        self.is_colliding_with_brick = False
-    
-    def update_lives(self):
-        return self.lives
-
+        self.update_lives = False
 
     def trig_multiplier(self):
         if self.degree == 90:
@@ -316,6 +312,7 @@ class Ball:
 
     def update(self):
 
+
         self.trail.append((self.x_ball + self.r_ball, self.y_ball + self.r_ball))
 
         if len(self.trail) > 5:
@@ -436,7 +433,7 @@ class Ball:
                     self.y_ball = self.start_yloc
                     self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle /2 - self.r_ball
                     self.lives -=1
-                    self.update_lives()
+                    self.update_lives = True
                     self.degree = 0
                     self.cycle_speed = abs(self.cycle_speed)
                     self.paddle.x_paddle = self.w_layout// 2 - self.paddle.w_paddle//2
@@ -445,14 +442,14 @@ class Ball:
                     self.paddle.launch = False
 
             self.past_paddle = self.paddle.x_paddle
-
         else:
             self.past_paddle = self.paddle.x_paddle
             self.update_angle("top", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
-
     
-    def is_brick_colliding(self):
-        return self.is_colliding_with_brick
+    def to_update_lives(self):
+        if self.update_lives:
+            self.update_lives = False
+            return True
 
     def draw(self):
 

@@ -18,7 +18,6 @@ class Breakout:
 
         self.paddle = Paddle()
 
-        
         pyxel.load('assets.pyxres')
 
         self.stagemaps = ['stage1', 'stage2', 'stage3']
@@ -30,7 +29,6 @@ class Breakout:
         self.lives = None
         self.lives_display = None
 
-        self.flag_brick_collide = False
         self.loading_next_level = False
 
         self.gamestate = 'playing'
@@ -44,10 +42,10 @@ class Breakout:
     def load_restart(self):
         self.stage_x = 0
         self.lives = 3
-
         self.curlevel = self.stagemaps[self.stage_x]
-
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives) 
+        self.ball = Ball(self, self.w_layout // 2 - self.ball_diameter // 2, self.paddle.y_paddle - self.ball_diameter, self.paddle, self.bricks, self.lives, self.launch)
+
         self.lenbricks = len(self.bricks)
         # self.lenbricks = 1
 
@@ -57,8 +55,11 @@ class Breakout:
 
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives) 
 
+        self.loading_next_level = False
+        self.lenbricks = len(self.bricks)
+
     def update(self):
-        if self.lives > self.ball.update_lives():
+        if self.ball.to_update_lives():
             self.lives -= 1
             self.lives_display.pop()
             self.ball = Ball(self, self.w_layout // 2 - self.ball_diameter // 2, self.paddle.y_paddle - self.ball_diameter, self.paddle, self.bricks, self.lives, self.launch)
@@ -68,17 +69,10 @@ class Breakout:
         for b in self.bricks:
             b.update()
 
-        if self.ball.is_brick_colliding() and not self.flag_brick_collide:
-            self.lenbricks -= 1
-            self.flag_brick_collide = True
-
-        elif not self.ball.is_brick_colliding():
-            self.flag_brick_collide = False
-
         if self.lenbricks == 0 and not self.loading_next_level:
             self.gamestate = 'loading next level'
+            self.loading_next_level = True
             self.load_next_level()
-            self.flag_brick_collide = False
 
         if self.lives == 0:
             self.gamestate = 'gameover'
@@ -105,6 +99,9 @@ class Breakout:
         for brick in self.bricks:
             if brick.alive:
                 brick.draw()
+            elif not brick.counted:
+                self.lenbricks -= 1
+                brick.counted = True
 
         for i in self.lives_display:
             i.draw()
