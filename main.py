@@ -1,4 +1,3 @@
-
 import pyxel
 from paddle import Paddle
 from ball import Ball
@@ -17,7 +16,6 @@ class Breakout:
         pyxel.init(self.w_layout, self.h_layout, title='Breakout')
 
         self.paddle = Paddle()
-
         pyxel.load('assets.pyxres')
 
         self.stagemaps = ['stage1', 'stage2', 'stage3']
@@ -29,43 +27,78 @@ class Breakout:
         self.lives = None
         self.lives_display = None
 
+        self.flag_brick_collide = False
         self.loading_next_level = False
-
         self.gamestate = 'playing'
 
         self.load_restart()
 
-        self.ball = Ball(self,self.w_layout//2 -self.ball_diameter//2, self.paddle.y_paddle - self.ball_diameter,self.paddle ,self.bricks, self.lives, self.launch)
+        self.ball = Ball(
+            self,
+            self.w_layout // 2 - self.ball_diameter // 2,
+            self.paddle.y_paddle - self.ball_diameter,
+            self.paddle,
+            self.bricks,
+            self.lives,
+            self.launch
+        )
 
         pyxel.run(self.update, self.draw)
 
     def load_restart(self):
         self.stage_x = 0
         self.lives = 3
-        self.curlevel = self.stagemaps[self.stage_x]
-        self.bricks, self.lives_display = load_level(self.curlevel, self.lives) 
-        self.ball = Ball(self, self.w_layout // 2 - self.ball_diameter // 2, self.paddle.y_paddle - self.ball_diameter, self.paddle, self.bricks, self.lives, self.launch)
 
+        # Reload the current level and initialize fresh bricks
+        self.curlevel = self.stagemaps[self.stage_x]
+        self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
+
+        # Reset brick states
         self.lenbricks = len(self.bricks)
-        # self.lenbricks = 1
+
+        # Reinitialize the Ball with the updated bricks
+        self.ball = Ball(
+            self,
+            self.w_layout // 2 - self.ball_diameter // 2,
+            self.paddle.y_paddle - self.ball_diameter,
+            self.paddle,
+            self.bricks,
+            self.lives,
+            self.launch
+        )
 
     def load_next_level(self):
         self.stage_x += 1
         self.curlevel = self.stagemaps[self.stage_x]
-
-        self.bricks, self.lives_display = load_level(self.curlevel, self.lives) 
-
-        self.loading_next_level = False
-        self.lenbricks = len(self.bricks)
+        self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
+        self.ball = Ball(
+            self,
+            self.w_layout // 2 - self.ball_diameter // 2,
+            self.paddle.y_paddle - self.ball_diameter,
+            self.paddle,
+            self.bricks,
+            self.lives,
+            self.launch
+        )
 
     def update(self):
-        if self.ball.to_update_lives():
+        if self.lives > self.ball.update_lives():
             self.lives -= 1
             self.lives_display.pop()
-            self.ball = Ball(self, self.w_layout // 2 - self.ball_diameter // 2, self.paddle.y_paddle - self.ball_diameter, self.paddle, self.bricks, self.lives, self.launch)
+            self.paddle = Paddle()
+            self.ball = Ball(
+                self,
+                self.w_layout // 2 - self.ball_diameter // 2,
+                self.paddle.y_paddle - self.ball_diameter,
+                self.paddle,
+                self.bricks,
+                self.lives,
+                self.launch
+            )
 
         self.paddle.update()
         self.ball.update()
+
         for b in self.bricks:
             b.update()
 
