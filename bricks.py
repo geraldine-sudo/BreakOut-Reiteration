@@ -19,7 +19,7 @@ brick_specs = {1: {
                     "w": 16,
                     "h": 16
                },
-        3.1: {        "score": 150,
+        3: {        "score": 150,
                     "hits": 3,
                     "img": 0,
                     "u": 96,
@@ -27,7 +27,7 @@ brick_specs = {1: {
                     "w": 16,
                     "h": 16
                     },
-        3.2: {        "score": 150,
+        3.1: {        "score": 150,
                     "hits": 3,
                     "img": 0,
                     "u": 96,
@@ -35,7 +35,7 @@ brick_specs = {1: {
                     "w": 16,
                     "h": 16
                     },
-        3.3: {        "score": 150,
+        3.2: {        "score": 150,
                     "hits": 3,
                     "img": 0,
                     "u": 112,
@@ -94,15 +94,27 @@ class Bricks:
         self.x = x
         self.y = y
         self.brick_level = brick_level
+        self.image = brick_level
+        self.hit  = False
         self.alive = True
 
         # Load brick data once
         self.brick_data = access_json('bricks')
-        self.update_attributes()
+        brick = self.brick_data.get(self.image, None)
+
+        if brick:
+            self.img = brick['img']
+            self.w = brick['w']
+            self.h = brick['h']
+            self.u = brick['u']
+            self.v = brick['v']
+            self.hits = brick['hits']
+            self.score = brick['score']
+        
 
     def update_attributes(self):
         """Updates attributes based on the current brick level."""
-        brick = self.brick_data.get(self.brick_level, None)
+        brick = self.brick_data.get(self.image, None)
 
         if brick:
             self.img = brick['img']
@@ -115,11 +127,16 @@ class Bricks:
             self.alive = False
 
     def update(self):
-        if self.brick_level == "0":
-            self.alive = False
-        else:
-            self.update_attributes()
-            
+        if self.hit == True and self.brick_level != "4":
+            self.hits -= 1
+            self.hit = False
+            if self.hits == 0:
+                self.alive = False
+            if self.brick_level == "3":
+                self.image = str(float(self.image) + 0.1)
+                self.update_attributes()
+
+
     def draw(self):
         pyxel.blt(self.x, 
                 self.y, 
@@ -129,6 +146,7 @@ class Bricks:
                 self.w,
                 self.h,
                 0)
+
        
 stages = {'stage1': {'brick_placement':[['', '1', '1', '', '1', '1', '', '', ''],
                                         ['1', '', '', '5', '', '', '1', '', ''],
