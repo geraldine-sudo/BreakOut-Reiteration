@@ -4,7 +4,7 @@ import pyxel
 from paddle import Paddle
 from bricks import Bricks
 class Ball:
-    def __init__(self, x: float, y: float, paddle: Paddle, bricks: None, life: int, launch: bool) -> None:
+    def __init__(self, main: object, x: float, y: float, paddle: Paddle, bricks: None, life: int, launch: bool) -> None:
         #layout
         self.w_layout = 120
         self.h_layout = 200
@@ -244,14 +244,17 @@ class Ball:
         if self.degree == 180 or self.degree == 360 or self.degree == 0:
             self.acc_y = 0
 
-    def brick_collision(self, new_x_ball: float, new_y_ball: float, brick : Bricks, brick_num: int) ->  None | tuple[float,float,float,str, Bricks, int]:
+    def brick_collision(self, new_x_ball: float, new_y_ball: float, brick : Bricks, 
+                        brick_num: int) ->  None | tuple[float,float,float,str, Bricks, int]:
+        
+        interesections: list[tuple[float,float,float, str, Bricks, int]] = []
+
         center_ball = (self.x_ball,self.y_ball)
         new_ball_center =(new_x_ball,new_y_ball)
         top_left = (brick.x - self.ball_diameter,brick.y - self.ball_diameter)
         top_right = (brick.x + brick.w, brick.y - self.ball_diameter)
         bottom_left= (brick.x -self.ball_diameter, brick.y + brick.h)
         bottom_right = (brick.x + brick.w, brick.y+brick.h)
-        interesections: list[tuple[float,float,float, str, Bricks, int]] = []
         if self.vy > 0:
             extremes = self.get_line_intersection(center_ball, new_ball_center, top_left, top_right)
             if extremes:
@@ -299,8 +302,9 @@ class Ball:
 
             #Bricks collision
 
-            ball_bricks_collide= ball_bricks_collide = min((pt for n, b in enumerate(self.bricks) if b.alive and (pt := self.brick_collision(new_x_ball, new_y_ball, b, n))
-                                                                ),default=None,key=lambda x: x[2])
+            ball_bricks_collide= min((pt for n, b in enumerate(self.bricks) if b.alive and (
+                                                    pt := self.brick_collision(new_x_ball, new_y_ball, b, n))),
+                                                    default=None,key=lambda x: x[2])
 
             if ball_bricks_collide:
                 self.bricks[ball_bricks_collide[5]].brick_level = str(int(self.bricks[ball_bricks_collide[5]].brick_level) -1)
@@ -454,11 +458,14 @@ class Ball:
                     self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle /2 - self.r_ball
                     self.lives -=1
                     self.degree = 0
+                    self.cycle_speed = abs(self.cycle_speed)
                     self.paddle.x_paddle = self.w_layout// 2 - self.paddle.w_paddle//2
                     self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle /2 - self.r_ball
                     self.launch = False
                     self.paddle.launch = False
-                
+
+                    #paddle as argument of ball + metronome cycle + restart ball
+
             self.past_paddle = self.paddle.x_paddle
 
         else:
