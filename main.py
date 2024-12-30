@@ -5,6 +5,8 @@ from bricks import load_level
 from stages import Stage1Map, Stage2Map, Stage3Map
 from game_progression import GameOver, NextStage1_2
 from time import sleep
+from score_object import Score_Object
+from random import randint
 
 class Breakout:
     def __init__(self):
@@ -12,6 +14,8 @@ class Breakout:
         self.h_layout = 200
         self.ball_diameter = 7
         self.launch = False
+        self.score_object: list[Score_Object] = []
+        self.score = 0
 
         pyxel.init(self.w_layout, self.h_layout, title='Breakout')
 
@@ -32,7 +36,6 @@ class Breakout:
         self.gamestate = 'playing'
 
         self.load_restart()
-
         self.ball = Ball(
             self,
             self.w_layout // 2 - self.ball_diameter // 2,
@@ -42,6 +45,7 @@ class Breakout:
             self.lives,
             self.launch
         )
+
 
         pyxel.run(self.update, self.draw)
 
@@ -99,7 +103,25 @@ class Breakout:
         self.paddle.update()
         self.ball.update()
 
+        for s in self.score_object[:]: 
+            if s.acquired:
+                self.score += s.points 
+                self.score_object.remove(s)  
+                
+            elif not s.alive:
+                self.score_object.remove(s)
+            
+            else:
+                s.update()
+
+        
+
+
         for b in self.bricks:
+            if b.hit and b.hits == 1:
+
+                for _ in range(2):
+                    self.score_object.append(Score_Object(randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.score, self.paddle ))
             b.update()
 
         if self.lenbricks == 0 and not self.loading_next_level:
@@ -135,6 +157,10 @@ class Breakout:
             elif not brick.counted:
                 self.lenbricks -= 1
                 brick.counted = True
+
+
+        for s in self.score_object:
+            s.draw()
 
         for i in self.lives_display:
             i.draw()
