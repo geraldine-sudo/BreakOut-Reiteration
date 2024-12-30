@@ -76,11 +76,10 @@ class Breakout:
             self.flag_brick_collide = False
 
         if self.lenbricks == 0 and not self.loading_next_level:
-            self.flag_brick_collide = False
             self.gamestate = 'loading next level'
-            self.lenbricks = len(self.bricks)
             self.load_next_level()
-            
+            self.flag_brick_collide = False
+
         if self.lives == 0:
             self.gamestate = 'gameover'
 
