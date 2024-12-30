@@ -19,10 +19,26 @@ brick_specs = {1: {
                     "w": 16,
                     "h": 16
                },
-        3: {        "score": 150,
+        3.1: {        "score": 150,
                     "hits": 3,
                     "img": 0,
                     "u": 96,
+                    "v": 48,
+                    "w": 16,
+                    "h": 16
+                    },
+        3.2: {        "score": 150,
+                    "hits": 3,
+                    "img": 0,
+                    "u": 96,
+                    "v": 64,
+                    "w": 16,
+                    "h": 16
+                    },
+        3.3: {        "score": 150,
+                    "hits": 3,
+                    "img": 0,
+                    "u": 112,
                     "v": 48,
                     "w": 16,
                     "h": 16
@@ -62,8 +78,8 @@ brick_specs = {1: {
 }
 
 #store brick specifications in json file
-with open('bricks.json', 'w') as f:
-    json.dump(brick_specs, f)
+# with open('bricks.json', 'w') as f:
+#     json.dump(brick_specs, f)
 
 def access_json(file: str):
     brick = {}
