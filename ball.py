@@ -206,7 +206,7 @@ class Ball:
                             self.degree = int((self.MB-180)*d/(h//2))
 
                         else:
-                            self.degree = self.MT
+                            self.degree = self.MB
                         
                 else:
                     self.degree = 180
@@ -346,7 +346,7 @@ class Ball:
             if ball_bricks_collide:
                 self.is_colliding_with_brick = True
 
-                self.bricks[ball_bricks_collide[5]].brick_level = str(int(self.bricks[ball_bricks_collide[5]].brick_level) -1)
+                self.bricks[ball_bricks_collide[5]].hit= True
 
 
                 self.x_ball = ball_bricks_collide[0] 
@@ -452,9 +452,7 @@ class Ball:
 
     
     def is_brick_colliding(self):
-        if self.is_colliding_with_brick:
-            self.is_colliding_with_brick = False
-            return True
+        return self.is_colliding_with_brick
 
     def draw(self):
 
