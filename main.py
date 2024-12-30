@@ -76,10 +76,11 @@ class Breakout:
             self.flag_brick_collide = False
 
         if self.lenbricks == 0 and not self.loading_next_level:
-            self.gamestate = 'loading next level'
-            self.load_next_level()
             self.flag_brick_collide = False
-
+            self.gamestate = 'loading next level'
+            self.lenbricks = len(self.bricks)
+            self.load_next_level()
+            
         if self.lives == 0:
             self.gamestate = 'gameover'
 
@@ -111,12 +112,14 @@ class Breakout:
 
         if self.gamestate == 'gameover':
             GameOver().draw()
+            self.paddle.launch = False
                     
         if self.gamestate == 'loading next level':
             NextStage1_2().draw()
             pyxel.flip()  
             sleep(1)
             self.gamestate = 'playing'
+            self.paddle.launch = False
 
         
         pyxel.mouse(visible=True)

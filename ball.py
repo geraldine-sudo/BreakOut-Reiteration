@@ -452,7 +452,9 @@ class Ball:
 
     
     def is_brick_colliding(self):
-        return self.is_colliding_with_brick
+        if self.is_colliding_with_brick:
+            self.is_colliding_with_brick = False
+            return True
 
     def draw(self):
 
