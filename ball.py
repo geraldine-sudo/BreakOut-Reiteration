@@ -37,7 +37,7 @@ class Ball:
         self.trail : list[tuple[float,float]] = []
 
         #Angles
-        self.cycle_speed = 2
+        self.cycle_speed = 4
         self.degree: int = 0 #angle in degrees
         self.angle = 0 # angle in radians
         self.MR = 10
@@ -56,6 +56,11 @@ class Ball:
 
         #bricks
         self.bricks = bricks
+
+        self.is_colliding_with_brick = False
+    
+    def update_lives(self):
+        return self.lives
 
 
     def trig_multiplier(self):
@@ -275,7 +280,6 @@ class Ball:
                 return (side[0], side[1], "left")
             
         return None
-    
 
     def brick_collision(self, new_x_ball: float, new_y_ball: float, brick : Bricks, 
                         brick_num: int) ->  None | tuple[float,float,float,str, Bricks, int]:
@@ -309,8 +313,8 @@ class Ball:
             
         return None if len(interesections) <= 0 else sorted(interesections, key = lambda b: b[2])[0]
 
-    def update(self):
 
+    def update(self):
 
         self.trail.append((self.x_ball + self.r_ball, self.y_ball + self.r_ball))
 
@@ -340,6 +344,8 @@ class Ball:
                                                     default=None,key=lambda x: x[2])
 
             if ball_bricks_collide:
+                self.is_colliding_with_brick = True
+
                 self.bricks[ball_bricks_collide[5]].brick_level = str(int(self.bricks[ball_bricks_collide[5]].brick_level) -1)
 
 
@@ -409,7 +415,7 @@ class Ball:
                         self.vy += (self.acc_y + self.G)
                 
             #Wall Collision
-
+            
             if self.x_ball <= 0:
                 self.x_ball = 0 
                 self.vy += (self.acc_y + self.G)
@@ -430,6 +436,7 @@ class Ball:
                     self.y_ball = self.start_yloc
                     self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle /2 - self.r_ball
                     self.lives -=1
+                    self.update_lives()
                     self.degree = 0
                     self.cycle_speed = abs(self.cycle_speed)
                     self.paddle.x_paddle = self.w_layout// 2 - self.paddle.w_paddle//2
@@ -437,18 +444,21 @@ class Ball:
                     self.launch = False
                     self.paddle.launch = False
 
-
             self.past_paddle = self.paddle.x_paddle
 
         else:
             self.past_paddle = self.paddle.x_paddle
             self.update_angle("top", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
 
+    
+    def is_brick_colliding(self):
+        return self.is_colliding_with_brick
+
     def draw(self):
 
 
         for  (tx, ty) in self.trail:
-            pyxel.rect(tx+ self.r_ball, ty, 3.5//2, 3.5//2, pyxel.COLOR_WHITE)
+            pyxel.rect(tx+ self.r_ball, ty, 3.5//2, 3.5//2, pyxel.COLOR_RED)
 
         ball = pyxel.blt(self.x_ball, self.y_ball, 0, 8, 0, 8, 8, 0)
 
