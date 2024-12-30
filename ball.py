@@ -3,6 +3,9 @@ import math
 import pyxel
 from paddle import Paddle
 from bricks import Bricks
+from typing import Literal
+
+Sides = Literal["top", "bottom", "left" , "right"]
 class Ball:
     def __init__(self, main: object, x: float, y: float, paddle: Paddle, bricks: None, life: int, launch: bool) -> None:
         #layout
@@ -244,6 +247,36 @@ class Ball:
         if self.degree == 180 or self.degree == 360 or self.degree == 0:
             self.acc_y = 0
 
+
+    def paddle_collision(self, new_x_ball: float, new_y_ball: float) -> None | tuple[float, float, Sides]:
+        center_ball = (self.x_ball,self.y_ball)
+        new_ball_center =(new_x_ball,new_y_ball)
+        top_left = (self.paddle.x_paddle- self.ball_diameter,self.paddle.y_paddle - self.ball_diameter)
+        top_right = (self.paddle.x_paddle + self.paddle.w_paddle, self.paddle.y_paddle - self.ball_diameter)
+        bottom_left= (self.paddle.x_paddle -self.ball_diameter, self.paddle.y_paddle + self.paddle.h_paddle )
+        bottom_right = (self.paddle.x_paddle + self.paddle.w_paddle, self.paddle.y_paddle + self.paddle.h_paddle)
+
+        if self.vy > 0:
+            extremes = self.get_line_intersection(center_ball, new_ball_center, top_left, top_right)
+            if extremes:
+                return (extremes[0], extremes[1], "top")
+        else:
+            extremes = self.get_line_intersection(center_ball, new_ball_center, bottom_left, bottom_right)
+            if extremes:
+                return (extremes[0], extremes[1], "bottom")
+            
+        if self.vx <= 0:
+            side = self.get_line_intersection(center_ball, new_ball_center, top_right, bottom_right)
+            if side:
+               return (side[0], side[1], "right")
+        elif self.vx>0:
+            side = self.get_line_intersection(center_ball, new_ball_center, top_left, bottom_left)
+            if side:
+                return (side[0], side[1], "left")
+            
+        return None
+    
+
     def brick_collision(self, new_x_ball: float, new_y_ball: float, brick : Bricks, 
                         brick_num: int) ->  None | tuple[float,float,float,str, Bricks, int]:
         
@@ -309,35 +342,18 @@ class Ball:
             if ball_bricks_collide:
                 self.bricks[ball_bricks_collide[5]].brick_level = str(int(self.bricks[ball_bricks_collide[5]].brick_level) -1)
 
-                if ball_bricks_collide[3] == "top":
-                    self.x_ball = ball_bricks_collide[0] 
-                    self.y_ball = ball_bricks_collide[1]
-                    self.update_angle("top", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
-                    self.vy = self.start_acc*self.sin_angle
-                    self.vx = -self.start_acc*self.cos_angle
-                    self.acc_y = 0
 
-                elif ball_bricks_collide[3] == "bottom":
-                    self.x_ball = ball_bricks_collide[0]
-                    self.y_ball = ball_bricks_collide[1]
-                    self.update_angle("bottom", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
-                    self.vy = self.start_acc*self.sin_angle
-                    self.vx = -self.start_acc*self.cos_angle
+                self.x_ball = ball_bricks_collide[0] 
+                self.y_ball = ball_bricks_collide[1]
+                self.update_angle(ball_bricks_collide[3], ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
+                self.vy = self.start_acc*self.sin_angle
+                self.vx = -self.start_acc*self.cos_angle
+                
+                if ball_bricks_collide[3] == "top":
                     self.acc_y = -self.G
 
-                elif ball_bricks_collide[3] == "right":
-                    self.x_ball = ball_bricks_collide[0]
-                    self.y_ball = ball_bricks_collide[1]
-                    self.update_angle("right", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
-                    self.vy = self.start_acc*self.sin_angle
-                    self.vx = -self.start_acc*self.cos_angle
-
-                else:
-                    self.x_ball = ball_bricks_collide[0]
-                    self.y_ball = ball_bricks_collide[1] 
-                    self.update_angle("left", ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
-                    self.vy = self.start_acc*self.sin_angle
-                    self.vx = -self.start_acc*self.cos_angle
+                elif ball_bricks_collide[3] == "bottom":
+                    self.acc_y = 0
 
                 self.past_paddle = self.paddle.x_paddle
                 return
@@ -370,71 +386,28 @@ class Ball:
                     self.vx = -self.start_acc*self.cos_angle
                     self.vy = self.start_acc*self.sin_angle
 
-                elif self.vx != 0:
-                    
-                    if self.y_ball <= self.start_yloc and self.vy >0:
-                        top =self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.paddle.x_paddle - self.ball_diameter,
-                            self.paddle.y_paddle-self.ball_diameter),(self.paddle.x_paddle +self.paddle.w_paddle,self.paddle.y_paddle-self.ball_diameter))
-                        
-                        if top: # will go through the top of the paddle
-                            self.y_ball = self.start_yloc
-                            self.x_ball = top[0]
-                            self.update_angle("top", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
-                            self.acc_y = -self.G
-                            self.vx = -self.start_acc*self.cos_angle
-                            self.vy = self.start_acc*self.sin_angle
-                            self.past_paddle = self.paddle.x_paddle
-                            return
-                    
-                    if self.vx > 0:
-                        side = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.paddle.x_paddle -self.ball_diameter,
-                        self.paddle.y_paddle- self.ball_diameter),(self.paddle.x_paddle - self.ball_diameter,self.paddle.y_paddle+self.paddle.h_paddle))
-                    else:
-                        side = self.get_line_intersection((self.x_ball,self.y_ball), (new_x_ball,new_y_ball), (self.paddle.x_paddle +self.paddle.w_paddle,
-                        self.paddle.y_paddle- self.ball_diameter),(self.paddle.x_paddle +self.paddle.w_paddle,self.paddle.y_paddle+self.paddle.h_paddle))
-
-                    if side:
-                        self.y_ball = side[1]
-                        if self.vx >0:
-                            
-                            self.x_ball = self.paddle.x_paddle - self.ball_diameter
-                            self.update_angle("left", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
-                        else:
-                            self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle
-                            self.update_angle("right", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
-                        self.vx = -self.start_acc*self.cos_angle
-                        self.vy = self.start_acc*self.sin_angle
-
-                        self.past_paddle = self.paddle.x_paddle
-
-                        return
-                          
-
-                    self.x_ball = new_x_ball
-                    self.y_ball = new_y_ball
-                    self.vy += (self.acc_y + self.G)
-
                 else:
-            
-                    if self.ball_in_horbounds_of_paddle(new_x_ball) and (
-                        self.start_yloc <= self.y_ball <= self.paddle.y_paddle + self.paddle.h_paddle):
+                    ball_paddle_collide = self.paddle_collision(new_x_ball,new_y_ball)
 
-                        if self.x_ball < self.paddle.x_paddle + self.paddle.w_paddle // 2:
-                            self.x_ball = self.paddle.x_paddle - self.ball_diameter
-                            self.update_angle("left", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
-                        else:
-                            self.x_ball = self.paddle.x_paddle + self.paddle.w_paddle
-                            self.update_angle("right", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
 
-                        self.vx = -self.start_acc*self.cos_angle
+                    if ball_paddle_collide:
+
+                        self.x_ball = ball_paddle_collide[0] 
+                        self.y_ball = ball_paddle_collide[1]
+                        self.update_angle(ball_paddle_collide[2], self.paddle.x_paddle,self.paddle.y_paddle, self.paddle.w_paddle,self.paddle.h_paddle)
                         self.vy = self.start_acc*self.sin_angle
+                        self.vx = -self.start_acc*self.cos_angle
+
+                        if ball_paddle_collide[2] == "top":
+                            self.acc_y = -self.G
+                        elif ball_paddle_collide[2] == "bottom":
+                            self.acc_y = 0
 
                     else:
-                        self.x_ball = new_x_ball
                         self.y_ball = new_y_ball
-                        self.vy  += (self.acc_y + self.G)
-
-
+                        self.x_ball = new_x_ball
+                        self.vy += (self.acc_y + self.G)
+                
             #Wall Collision
 
             if self.x_ball <= 0:
@@ -464,7 +437,6 @@ class Ball:
                     self.launch = False
                     self.paddle.launch = False
 
-                    #paddle as argument of ball + metronome cycle + restart ball
 
             self.past_paddle = self.paddle.x_paddle
 
