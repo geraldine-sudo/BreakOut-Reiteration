@@ -131,12 +131,13 @@ class Bricks:
     def update(self):
         if self.hit == True and self.brick_level != "4":
             self.hits -= 1
-            self.hit = False
             if self.hits == 0:
                 self.alive = False
-            if self.brick_level == "3":
+            if self.brick_level == "3" and self.alive:
                 self.image = str(float(self.image) + 0.1)
                 self.update_attributes()
+
+            self.hit = False
 
     def draw(self):
         pyxel.blt(self.x, 
