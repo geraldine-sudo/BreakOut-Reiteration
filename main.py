@@ -19,6 +19,7 @@ class Breakout:
         self.G = 3 # need to make it configurable
         self.K = 2
         self.Q = 10  # need to make it configurable
+        self.X = 20 # need to make configurable
         self.score = 0
         self.streak = 0
 
@@ -124,6 +125,8 @@ class Breakout:
         for i in range(len(self.score_object) - 1, -1, -1):  # Iterate backwards
 
             s = self.score_object[i]
+
+            print(s.type)
             if s.acquired:
                 self.streak += 1
                 self.score += s.points + self.Q*self.streak
@@ -152,10 +155,8 @@ class Breakout:
                     self.balls.append(ball)
 
                 else:
-
-
                     for _ in range(self.K):
-                        self.score_object.append(Score_Object(randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.score, self.paddle, self.G ))
+                        self.score_object.append(Score_Object(randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.score, self.paddle, self.G, self.X ))
             b.update()
 
     
@@ -202,6 +203,7 @@ class Breakout:
             s.draw()
 
         for i in self.lives_display:
+
             i.draw()
 
         if self.gamestate == 'gameover':
