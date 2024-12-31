@@ -7,6 +7,7 @@ from game_progression import GameOver, NextStage1_2
 from time import sleep
 from score_object import Score_Object
 from random import randint
+import math
 
 class Breakout:
     def __init__(self):
@@ -58,6 +59,7 @@ class Breakout:
         self.loading_next_level = False
         self.gamestate = 'playing'
 
+
         # Reload the current level and initialize fresh bricks
         self.curlevel = self.stagemaps[self.stage_x]
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
@@ -82,6 +84,7 @@ class Breakout:
         self.stage_x += 1
         self.curlevel = self.stagemaps[self.stage_x]
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
+        self.lenbricks = len(self.bricks)
         self.paddle = Paddle()
         self.balls = [Ball(
                 self.w_layout // 2 - self.ball_diameter // 2,
@@ -131,6 +134,13 @@ class Breakout:
                 if b.brick_level == "5":
                     ball = Ball(b.x + 5, b.y + 3, self.paddle, self.bricks, self. lives, True)
                     ball.active = False
+                    ball.degree = randint(190, 350) 
+                    ball.angle = math.radians(ball.degree)
+                    ball.trig_multiplier()
+                    v = randint(-210, -179)
+                    ball.vx = -v*ball.cos_angle
+                    ball.vy = v*ball.sin_angle
+
                     self.balls.append(ball)
 
                 else:
