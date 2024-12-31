@@ -7,13 +7,14 @@ from typing import Literal
 
 Sides = Literal["top", "bottom", "left" , "right"]
 class Ball:
-    def __init__(self, main: object, x: float, y: float, paddle: Paddle, bricks: None, life: int, launch: bool) -> None:
+    def __init__(self, x: float, y: float, paddle: Paddle, bricks: None, life: int, launch: bool) -> None:
         #layout
         self.w_layout = 120
         self.h_layout = 200
         self.G = 5
         self.launch = launch
-        self.lives = life
+        self.alive = True
+        self.active = True
 
         # Main Ball Properties
         self.x_ball: float = x
@@ -57,7 +58,8 @@ class Ball:
         #bricks
         self.bricks = bricks
 
-        self.update_lives = False
+        self.is_colliding_with_brick = False
+
 
     def trig_multiplier(self):
         if self.degree == 90:
@@ -311,8 +313,6 @@ class Ball:
 
 
     def update(self):
-
-
         self.trail.append((self.x_ball + self.r_ball, self.y_ball + self.r_ball))
 
         if len(self.trail) > 5:
@@ -320,136 +320,122 @@ class Ball:
 
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             if not self.launch and self.ball_in_horbounds_of_paddle(self.x_ball):
-                self.trig_multiplier ()
-                self.vy = self.start_acc*self.sin_angle
-                if self.degree != 180 or self.degree !=0:
-                    self.acc_y = self.G*(-1)
-                self.vx = -self.start_acc*self.cos_angle
+                self.trig_multiplier()
+                self.vy = self.start_acc * self.sin_angle
+                if self.degree != 180 or self.degree != 0:
+                    self.acc_y = self.G * (-1)
+                self.vx = -self.start_acc * self.cos_angle
 
             self.launch = True
             self.paddle.launch = True
 
         if self.launch:
-            new_y_ball = self.y_ball + self.vy*(1/60) + 0.5*(self.acc_y + self.G)*(1/60)
-            new_x_ball = self.x_ball + self.vx*(1/60) + 0.5*(self.acc_x)*(1/60)
+            # Ball's position update for both active and inactive states
+            new_y_ball = self.y_ball + self.vy * (1 / 60) + 0.5 * (self.acc_y + self.G) * (1 / 60)
+            new_x_ball = self.x_ball + self.vx * (1 / 60) + 0.5 * (self.acc_x) * (1 / 60)
 
+            # Handle Brick Collision
+            if self.active:
+                ball_bricks_collide = min(
+                    (pt for n, b in enumerate(self.bricks) if b.alive and (
+                        pt := self.brick_collision(new_x_ball, new_y_ball, b, n))),
+                    default=None, key=lambda x: x[2]
+                )
+            else:
+                ball_bricks_collide = None
 
-            #Bricks collision
-
-            ball_bricks_collide= min((pt for n, b in enumerate(self.bricks) if b.alive and (
-                                                    pt := self.brick_collision(new_x_ball, new_y_ball, b, n))),
-                                                    default=None,key=lambda x: x[2])
-
+            # Ball-Brick Collision Handling
             if ball_bricks_collide:
                 self.is_colliding_with_brick = True
-
-                self.bricks[ball_bricks_collide[5]].hit= True
-
-
-                self.x_ball = ball_bricks_collide[0] 
+                self.bricks[ball_bricks_collide[5]].hit = True
+                self.x_ball = ball_bricks_collide[0]
                 self.y_ball = ball_bricks_collide[1]
-                self.update_angle(ball_bricks_collide[3], ball_bricks_collide[4].x,ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
-                self.vy = self.start_acc*self.sin_angle
-                self.vx = -self.start_acc*self.cos_angle
-                
+                self.update_angle(ball_bricks_collide[3], ball_bricks_collide[4].x, ball_bricks_collide[4].y, ball_bricks_collide[4].w, ball_bricks_collide[4].h)
+                self.vy = self.start_acc * self.sin_angle
+                self.vx = -self.start_acc * self.cos_angle
+
                 if ball_bricks_collide[3] == "top":
                     self.acc_y = -self.G
-
                 elif ball_bricks_collide[3] == "bottom":
                     self.acc_y = 0
 
                 self.past_paddle = self.paddle.x_paddle
                 return
-                
-            
-            # Paddle Collsion
 
+            # Paddle Collision Handling
             else:
                 if self.ball_in_horbounds_of_paddle(self.x_ball) and self.y_ball == self.start_yloc:
-                    
-                    #at the top of paddle
+                    # At the top of the paddle
                     self.x_ball = new_x_ball
                     self.y_ball = new_y_ball
                     self.vy += (self.acc_y + self.G)
 
-                elif self.x_ball == self.past_paddle - self.ball_diameter or self.x_ball == self.past_paddle +self.paddle.w_paddle:
+                elif self.x_ball == self.past_paddle - self.ball_diameter or self.x_ball == self.past_paddle + self.paddle.w_paddle:
                     self.x_ball = new_x_ball
                     self.y_ball = new_y_ball
                     self.vy += (self.acc_y + self.G)
 
                 elif self.ball_in_horbounds_of_paddle(self.x_ball) and (
-                    self.y_ball < self.start_yloc < new_y_ball  and 
-                    self.ball_in_horbounds_of_paddle(new_x_ball)
-                ): # above the paddle and it surpassed the paddle
-                
+                    self.y_ball < self.start_yloc < new_y_ball and self.ball_in_horbounds_of_paddle(new_x_ball)
+                ):  # Above the paddle and it surpassed the paddle
                     self.y_ball = self.start_yloc
                     self.x_ball = new_x_ball
-                    self.update_angle("top", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
+                    self.update_angle("top", self.paddle.x_paddle, self.paddle.y_paddle, self.paddle.w_paddle, self.paddle.h_paddle)
                     self.acc_y = -self.G
-                    self.vx = -self.start_acc*self.cos_angle
-                    self.vy = self.start_acc*self.sin_angle
+                    self.vx = -self.start_acc * self.cos_angle
+                    self.vy = self.start_acc * self.sin_angle
+                    self.active = True
 
                 else:
-                    ball_paddle_collide = self.paddle_collision(new_x_ball,new_y_ball)
-
+                    ball_paddle_collide = self.paddle_collision(new_x_ball, new_y_ball)
 
                     if ball_paddle_collide:
-
-                        self.x_ball = ball_paddle_collide[0] 
+                        self.x_ball = ball_paddle_collide[0]
                         self.y_ball = ball_paddle_collide[1]
-                        self.update_angle(ball_paddle_collide[2], self.paddle.x_paddle,self.paddle.y_paddle, self.paddle.w_paddle,self.paddle.h_paddle)
-                        self.vy = self.start_acc*self.sin_angle
-                        self.vx = -self.start_acc*self.cos_angle
+                        self.update_angle(ball_paddle_collide[2], self.paddle.x_paddle, self.paddle.y_paddle, self.paddle.w_paddle, self.paddle.h_paddle)
+                        self.vy = self.start_acc * self.sin_angle
+                        self.vx = -self.start_acc * self.cos_angle
 
                         if ball_paddle_collide[2] == "top":
                             self.acc_y = -self.G
+                            self.active = True
                         elif ball_paddle_collide[2] == "bottom":
                             self.acc_y = 0
-
                     else:
                         self.y_ball = new_y_ball
                         self.x_ball = new_x_ball
                         self.vy += (self.acc_y + self.G)
-                
-            #Wall Collision
-            
+
+            # Wall Collision Handling
             if self.x_ball <= 0:
-                self.x_ball = 0 
+                self.x_ball = 0
                 self.vy += (self.acc_y + self.G)
                 self.vx *= -1
 
-            elif self.x_ball  +self.ball_diameter> self.w_layout:
+            elif self.x_ball + self.ball_diameter > self.w_layout:
                 self.x_ball = self.w_layout - self.ball_diameter
                 self.vy += (self.acc_y + self.G)
                 self.vx *= -1
 
-            if self.y_ball <=0:
-                #new calculated y is out of frame
+            if self.y_ball <= 0:
+                # Ball out of bounds at the top
                 self.y_ball = 0
-                self.acc_y = 0    #tentative
-                self.vy = (-1)*self.vy + (self.acc_y + self.G)
-                
+                self.acc_y = 0
+                self.vy = (-1) * self.vy + (self.acc_y + self.G)
+
             elif new_y_ball + self.ball_diameter >= self.h_layout:
-                    self.y_ball = self.start_yloc
-                    self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle /2 - self.r_ball
-                    self.lives -=1
-                    self.update_lives = True
-                    self.degree = 0
-                    self.cycle_speed = abs(self.cycle_speed)
-                    self.paddle.x_paddle = self.w_layout// 2 - self.paddle.w_paddle//2
-                    self.x_ball = self.paddle.x_paddle +self.paddle.w_paddle /2 - self.r_ball
-                    self.launch = False
-                    self.paddle.launch = False
+                self.y_ball = new_y_ball
+                self.x_ball = new_x_ball
+                self.alive = False
 
             self.past_paddle = self.paddle.x_paddle
         else:
             self.past_paddle = self.paddle.x_paddle
-            self.update_angle("top", self.paddle.x_paddle,self.paddle.y_paddle,self.paddle.w_paddle,self.paddle.h_paddle)
+            self.update_angle("top", self.paddle.x_paddle, self.paddle.y_paddle, self.paddle.w_paddle, self.paddle.h_paddle)
+
     
-    def to_update_lives(self):
-        if self.update_lives:
-            self.update_lives = False
-            return True
+    def is_brick_colliding(self):
+        return self.is_colliding_with_brick
 
     def draw(self):
 
