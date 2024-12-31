@@ -11,7 +11,7 @@ class Ball:
         #layout
         self.w_layout = 120
         self.h_layout = 200
-        self.G = 5
+        self.G = 3
         self.launch = launch
         self.alive = True
         self.active = True
@@ -26,7 +26,7 @@ class Ball:
         #paddle properties
         self.paddle = paddle
         self.past_paddle = self.paddle.x_paddle
-        self.start_acc = -240
+        self.start_acc = -210
 
         #ball properties
         self.acc_y = 0
