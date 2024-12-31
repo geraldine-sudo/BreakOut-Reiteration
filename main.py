@@ -67,6 +67,7 @@ class Breakout:
 
         # Reset brick states
         self.lenbricks = len(self.bricks)
+        # self.lenbricks = 1
 
         # Reinitialize the Ball with the updated bricks
         self.ball = Ball(
@@ -95,7 +96,7 @@ class Breakout:
         )
 
     def update(self):
-        if self.lives > self.ball.update_lives():
+        if self.ball.to_update_lives():
             self.lives -= 1
             self.lives_display.pop()
             self.paddle = Paddle()
@@ -108,7 +109,7 @@ class Breakout:
                 self.lives,
                 self.launch
             )
-
+        
         self.paddle.update()
         self.ball.update()
 
@@ -133,7 +134,6 @@ class Breakout:
                     self.score_object.append(Score_Object(randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.score, self.paddle ))
             b.update()
 
-        print(self.lenbricks, len(self.score_object))
 
         if self.lenbricks == 0 and not self.loading_next_level and len(self.score_object) == 0:
             self.gamestate = 'loading next level'
@@ -168,7 +168,6 @@ class Breakout:
             elif not brick.counted:
                 self.lenbricks -= 1
                 brick.counted = True
-
 
         for s in self.score_object:
             s.draw()
