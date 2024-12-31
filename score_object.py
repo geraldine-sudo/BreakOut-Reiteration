@@ -25,6 +25,8 @@ class Score_Object:
                 self.y_obj = self.paddle.y_paddle - self.h_obj
                 self.acquired = True  
                 self.alive = False  
+            elif self.y_obj >= self.paddle.h_layout:
+                self.alive = False
             else:
                 # If the object hasn't hit the paddle yet, keep falling
                 self.y_obj = new_y
