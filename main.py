@@ -106,7 +106,7 @@ class Breakout:
         if not_alive and self.lives >= 0:
             self.streak = 0
             self.lives -= 1
-            self.lives_display.pop(0)
+            self.lives_display.pop()
             self.paddle = Paddle()
             self.balls = [Ball(
                 self.w_layout // 2 - self.ball_diameter // 2,
