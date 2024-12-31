@@ -50,12 +50,20 @@ class Breakout:
         pyxel.run(self.update, self.draw)
 
     def load_restart(self):
+        self.score_object.clear()
+        self.score = 0
         self.stage_x = 0
         self.lives = 3
+        self.flag_brick_collide = False
+        self.loading_next_level = False
+        self.gamestate = 'playing'
+
 
         # Reload the current level and initialize fresh bricks
         self.curlevel = self.stagemaps[self.stage_x]
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
+
+        self.paddle = Paddle()
 
         # Reset brick states
         self.lenbricks = len(self.bricks)
@@ -75,6 +83,7 @@ class Breakout:
         self.stage_x += 1
         self.curlevel = self.stagemaps[self.stage_x]
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
+        self.paddle = Paddle()
         self.ball = Ball(
             self,
             self.w_layout // 2 - self.ball_diameter // 2,
@@ -103,19 +112,19 @@ class Breakout:
         self.paddle.update()
         self.ball.update()
 
-        for s in self.score_object[:]: 
+        for i in range(len(self.score_object) - 1, -1, -1):  # Iterate backwards
+
+            s = self.score_object[i]
+            print(s.alive)
             if s.acquired:
-                self.score += s.points 
-                self.score_object.remove(s)  
-                
+                self.score += s.points
+                self.score_object.pop(i)  # Remove directly by index
+
             elif not s.alive:
-                self.score_object.remove(s)
-            
+                self.score_object.pop(i)  # Remove directly by index
+
             else:
                 s.update()
-
-        
-
 
         for b in self.bricks:
             if b.hit and b.hits == 1:
@@ -124,7 +133,9 @@ class Breakout:
                     self.score_object.append(Score_Object(randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.score, self.paddle ))
             b.update()
 
-        if self.lenbricks == 0 and not self.loading_next_level:
+        print(self.lenbricks, len(self.score_object))
+
+        if self.lenbricks == 0 and not self.loading_next_level and len(self.score_object) == 0:
             self.gamestate = 'loading next level'
             self.loading_next_level = True
             self.load_next_level()
@@ -167,14 +178,12 @@ class Breakout:
 
         if self.gamestate == 'gameover':
             GameOver().draw()
-            self.paddle.launch = False
                     
         if self.gamestate == 'loading next level':
             NextStage1_2().draw()
             pyxel.flip()  
             sleep(1)
             self.gamestate = 'playing'
-            self.paddle.launch = False
 
         
         pyxel.mouse(visible=True)
