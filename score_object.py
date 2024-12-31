@@ -3,14 +3,14 @@ from paddle import Paddle
 
 class Score_Object:
 
-    def __init__(self, x: int, y: int, points: int, paddle: Paddle) -> None:
+    def __init__(self, x: int, y: int, points: int, paddle: Paddle, gravity: int) -> None:
         self.x_obj = x
         self.y_obj = y
         self.points = points
         self.paddle = paddle
         self.acquired = False
         self.alive = True
-        self.G = 5  
+        self.G = gravity
         self.h_obj = 3  
         self.w_obj = 3  
 
