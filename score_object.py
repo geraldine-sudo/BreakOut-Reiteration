@@ -19,16 +19,10 @@ class Score_Object:
         self.paddle = paddle
         self.acquired = False
         self.alive = True
-<<<<<<< HEAD
-        self.G = 5  
-        self.h_obj = 8  
-        self.w_obj = 8  
-=======
         self.G = gravity
         self.h_obj = 3  
         self.w_obj = 3 
 
->>>>>>> 42dc8b31a699f8f2c75901307b789418a8803dbd
 
     def update(self):
         if self.alive:
@@ -47,11 +41,6 @@ class Score_Object:
                 # If the object hasn't hit the paddle yet, keep falling
                 self.y_obj = new_y
 
-<<<<<<< HEAD
-    def draw(self):
-        if self.alive:  
-            pyxel.blt(self.x_obj, self.y_obj, 0, 144, 32, self.w_obj, self.h_obj, 0)
-=======
     def draw(self): # testing only
         if self.alive: 
             if self.type == 1: 
@@ -68,4 +57,3 @@ class Score_Object:
 
 
             
->>>>>>> 42dc8b31a699f8f2c75901307b789418a8803dbd

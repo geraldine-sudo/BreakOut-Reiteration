@@ -74,8 +74,8 @@ class Breakout:
         self.paddle = Paddle()
 
         # Reset brick states
-        self.lenbricks = len(self.bricks)
-        # self.lenbricks = 1
+        #self.lenbricks = len(self.bricks)
+        self.lenbricks = 1
 
         self.balls: list[Ball] = [Ball(
             self.w_layout // 2 - self.ball_diameter // 2,
