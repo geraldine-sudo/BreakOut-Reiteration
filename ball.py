@@ -7,11 +7,11 @@ from typing import Literal
 
 Sides = Literal["top", "bottom", "left" , "right"]
 class Ball:
-    def __init__(self, x: float, y: float, paddle: Paddle, bricks: None, life: int, launch: bool) -> None:
+    def __init__(self, x: float, y: float, paddle: Paddle, gravity: int, bricks: None, life: int, launch: bool) -> None:
         #layout
         self.w_layout = 120
         self.h_layout = 200
-        self.G = 3
+        self.G = gravity
         self.launch = launch
         self.alive = True
         self.active = True
@@ -364,6 +364,7 @@ class Ball:
 
             # Paddle Collision Handling
             else:
+
                 if self.ball_in_horbounds_of_paddle(self.x_ball) and self.y_ball == self.start_yloc:
                     # At the top of the paddle
                     self.x_ball = new_x_ball
@@ -385,6 +386,31 @@ class Ball:
                     self.vx = -self.start_acc * self.cos_angle
                     self.vy = self.start_acc * self.sin_angle
                     self.active = True
+
+                elif self.ball_in_horbounds_of_paddle(self.x_ball) and self.start_yloc <self.y_ball <= self.paddle.y_paddle:
+                    if self.x_ball <= self.paddle.x_paddle + self.paddle.w_paddle // 2:
+                        if self.paddle.x_paddle < self.ball_diameter:
+                            self.x_ball = 0
+                            self.paddle.x_paddle = self.ball_diameter
+                        else:
+                            self.x_ball = self.paddle.x_paddle - self.ball_diameter
+
+                        self.update_angle("left", self.paddle.x_paddle, self.paddle.y_paddle, self.paddle.w_paddle, self.paddle.h_paddle)
+
+                    else:
+
+                        if self.paddle.x_paddle + self.paddle.w_paddle > self.w_layout - self.ball_diameter:
+                            self.x_ball = self.w_layout - self.ball_diameter
+                            self.paddle.x_paddle =  self.w_layout - self.ball_diameter - self.paddle.w_paddle
+
+                        else:
+                            self.x_ball = self.paddle.x_paddle + self.paddle.w_paddle
+
+                        self.update_angle("right", self.paddle.x_paddle, self.paddle.y_paddle, self.paddle.w_paddle, self.paddle.h_paddle)
+                    self.vy = self.start_acc * self.sin_angle
+                    self.vx = -self.start_acc * self.cos_angle
+                    self.y_ball = self.y_ball + self.vy * (1 / 60) + 0.5 * (self.acc_y + self.G) * (1 / 60)
+                    self.x_ball = self.x_ball + self.vx * (1 / 60) + 0.5 * (self.acc_x) * (1 / 60)
 
                 else:
                     ball_paddle_collide = self.paddle_collision(new_x_ball, new_y_ball)

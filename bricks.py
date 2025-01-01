@@ -220,12 +220,12 @@ def load_level(level: str, lives: int):
         stage = json.load(f)
         y = 0
         for i in stage[level]['brick_placement']:
-            x = 0
-            for j in i:
+            x = 16 * (len(i) - 1)  # Start from the rightmost column
+            for j in reversed(i):  # Iterate over the row in reverse
                 if j in possible_bricks:
                     this_level.append(Bricks(x, y, j))
                 elif (j == '6' or j == '7') and len(lives_display) < lives:
                     lives_display.append(Bricks(x, y, j))
-                x += 16
-            y += 16
+                x -= 16  # Move to the left for the next brick
+            y += 16  # Move to the next row
     return this_level, lives_display
