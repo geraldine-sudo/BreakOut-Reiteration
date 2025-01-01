@@ -202,7 +202,7 @@ def image_ref(x: int, brick_level: str):
         elif brick_level == "2":
             return "8.1"
         else:
-            return brick_level == "3"
+            return "8.2"
     elif x == 2:
         return "9"
     elif x == 3 :
@@ -261,7 +261,7 @@ class Score_Object:
             self.main.anti_gravity = False
             self.main.t_anti_gravity += 300
         elif self.image == "9.3":
-            self.main.extend_paddle = False
+            self.main.extend_paddle = True
             self.main.t_extend_paddle += 300
 
         else:
