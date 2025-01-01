@@ -165,7 +165,7 @@ class Breakout:
 
 
                     for _ in range(2):
-                        self.score_object.append(Score_Object(randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.score, self.paddle ))
+                        self.score_object.append(Score_Object(randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.score, self.paddle, self.G, self.X ))
             b.update()
 
         print(self.lenbricks, len(self.score_object))
