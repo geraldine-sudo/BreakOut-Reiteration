@@ -74,8 +74,8 @@ class Breakout:
         self.paddle = Paddle()
 
         # Reset brick states
-        #self.lenbricks = len(self.bricks)
-        self.lenbricks = 1
+        self.lenbricks = len(self.bricks)
+        # self.lenbricks = 1
 
         self.balls: list[Ball] = [Ball(
             self.w_layout // 2 - self.ball_diameter // 2,
@@ -133,7 +133,7 @@ class Breakout:
         for i in range(len(self.score_object) - 1, -1, -1):  # Iterate backwards
 
             s = self.score_object[i]
-            print(s.alive)
+
             if s.acquired:
                 self.streak += 1
                 self.score += s.points + self.Q*self.streak
@@ -163,12 +163,9 @@ class Breakout:
 
                 else:
 
-
                     for _ in range(2):
                         self.score_object.append(Score_Object(randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.score, self.paddle, self.G, self.X ))
             b.update()
-
-        print(self.lenbricks, len(self.score_object))
 
         if self.lenbricks == 0 and not self.loading_next_level and self.gamestate == 'playing level 1':
             self.gamestate = 'loading level 2'
@@ -187,8 +184,9 @@ class Breakout:
             self.load_restart()
             self.gamestate = 'playing level 1'
 
+        if self.lenbricks == 0 and self.gamestate == 'playing level 3':
+            self.gamestate = 'win'
 
-    
     def draw(self):
         pyxel.cls(0)
 
@@ -221,12 +219,10 @@ class Breakout:
 
             for i in self.lives_display:
                 i.draw()
-
-        if self.gamestate == 'gameover':
-            GameOver().draw()
         
+            pyxel.text(5, 192, "Score: " + str(self.score), pyxel.COLOR_BLACK)
+
         #####
-        pyxel.mouse(visible=True)
 
         if self.gamestate == 'loading level 1':
             Pregame().draw()
@@ -238,9 +234,20 @@ class Breakout:
             NextStage1_2().draw()
             pyxel.flip()  
             sleep(1)
-            self.gamestate = 'playing'
+            self.gamestate = 'playing level 2'
 
-        
+        if self.gamestate == 'loading level 3':
+            NextStage2_3().draw()
+            pyxel.flip()  
+            sleep(1)
+            self.gamestate = 'playing level 3'
+
+        if self.gamestate == 'win':
+            Win().draw()
+            pyxel.text(25, 172, "Your final score: " + str(self.score), pyxel.COLOR_WHITE)
+
+        if self.gamestate == 'gameover':
+            GameOver().draw()
         pyxel.mouse(visible=True)
 
         
