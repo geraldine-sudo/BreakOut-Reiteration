@@ -36,7 +36,7 @@ class Breakout:
 
         pyxel.init(self.w_layout, self.h_layout, title='Breakout')
 
-        self.paddle = Paddle()
+        self.paddle = Paddle(self)
         pyxel.load('assets.pyxres')
 
         self.stagemaps = ['stage1', 'stage2', 'stage3']
@@ -69,6 +69,8 @@ class Breakout:
         self.gamestate = 'starting'
 
     def load_restart(self):
+        self.extend_paddle = False
+        self.t_extend_paddle = 0
         self.streak = 0
         self.score_object.clear()
         self.streak_score.clear()
@@ -84,7 +86,7 @@ class Breakout:
         self.curlevel = self.stagemaps[self.stage_x]
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
 
-        self.paddle = Paddle()
+        self.paddle = Paddle(self)
 
         # Reset brick states
         self.lenbricks = sum(1 for brick in self.bricks if brick.brick_level != "4")
@@ -102,6 +104,8 @@ class Breakout:
         # Reinitialize the Ball with the updated bricks
 
     def load_next_level(self):
+        self.extend_paddle = False
+        self.t_extend_paddle = 0
         self.streak = 0
         self.stage_x += 1
         self.curlevel = self.stagemaps[self.stage_x]
@@ -109,7 +113,7 @@ class Breakout:
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
         self.lenbricks = sum(1 for brick in self.bricks if brick.brick_level != "4")
         
-        self.paddle = Paddle()
+        self.paddle = Paddle(self)
         self.balls = [Ball(
                 self.w_layout // 2 - self.ball_diameter // 2,
                 self.paddle.y_paddle - self.ball_diameter,
@@ -126,13 +130,21 @@ class Breakout:
 
         if self.gamestate[0] == "p":
 
+
+            if self.extend_paddle:
+                self.t_extend_paddle -= 1
+                if self.t_extend_paddle < 0:
+                    self.extend_paddle = False
+
             not_alive = all(not ball.alive for ball in self.balls)
 
             if not_alive and self.lives >= 0:
+                self.extend_paddle = False
+                self.t_extend_paddle = 0
                 self.streak = 0
                 self.lives -= 1
                 self.lives_display.pop()
-                self.paddle = Paddle()
+                self.paddle = Paddle(self)
                 self.balls = [Ball(
                     self.w_layout // 2 - self.ball_diameter // 2,
                     self.paddle.y_paddle - self.ball_diameter,
@@ -265,10 +277,21 @@ class Breakout:
             if self.streak > 1:
                 pyxel.text(5, 192, f'Streak: {self.streak}', pyxel.COLOR_BLACK, None)
         
-            pyxel.text(5, 185, "Score: " + str(self.score), pyxel.COLOR_BLACK)
+            pyxel.text(5, 185, "Score: " + str(self.score), pyxel.COLOR_BLACK, None)
             if self.extra_lives >0:
                 pyxel.text(97, 192, f"{self.extra_lives}X", pyxel.COLOR_BLACK, None)
                 pyxel.blt(110,192, 0, 152, 80, 7,5)
+
+            if self.extend_paddle:
+
+                if self.extend_paddle:
+                    text = f"{math.ceil(self.t_extend_paddle / 30)}s"
+                    text_width = len(text) * 4  
+                    
+                    text_x = 10 - text_width // 2
+                    pyxel.circ(10, 140, 8, pyxel.COLOR_WHITE)
+                    pyxel.blt(7, 135, 0, 136, 88, 7, 7)
+                    pyxel.text(text_x, 142, text, pyxel.COLOR_BLACK, None)
 
         #####
 
