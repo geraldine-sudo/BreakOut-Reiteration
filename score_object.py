@@ -11,8 +11,8 @@ class Score_Object:
         self.acquired = False
         self.alive = True
         self.G = 5  
-        self.h_obj = 3  
-        self.w_obj = 3  
+        self.h_obj = 8  
+        self.w_obj = 8  
 
     def update(self):
         if self.alive:
@@ -33,4 +33,4 @@ class Score_Object:
 
     def draw(self):
         if self.alive:  
-            pyxel.rect(self.x_obj, self.y_obj, self.w_obj, self.h_obj, pyxel.COLOR_LIME)
+            pyxel.blt(self.x_obj, self.y_obj, 0, 144, 32, self.w_obj, self.h_obj, 0)

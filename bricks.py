@@ -51,7 +51,7 @@ brick_specs = {1: {
                     "w": 16,
                     "h": 16
                     },
-        5: {        "score": 0,
+        5: {        "score": 50,
                     "hits": 1,
                     "img": 0,
                     "u": 80,

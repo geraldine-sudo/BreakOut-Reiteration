@@ -3,7 +3,7 @@ from paddle import Paddle
 from ball import Ball
 from bricks import load_level
 from stages import Stage1Map, Stage2Map, Stage3Map
-from game_progression import GameOver, NextStage1_2
+from game_progression import GameOver, NextStage1_2, NextStage2_3, Win, Start, Pregame
 from time import sleep
 from score_object import Score_Object
 from random import randint
@@ -27,16 +27,16 @@ class Breakout:
         self.stage_x = 0
 
         self.curlevel = self.stagemaps[self.stage_x]
-        self.bricks = None
+        self.bricks: list[Brick] = []
         self.lenbricks = None
         self.lives = 3
         self.lives_display = None
 
         self.flag_brick_collide = False
         self.loading_next_level = False
-        self.gamestate = 'playing'
+        self.gamestate = None
 
-        self.load_restart()
+        self.launch_game()
 
         self.balls = [Ball(
             self.w_layout // 2 - self.ball_diameter // 2,
@@ -46,9 +46,10 @@ class Breakout:
             self.lives,
             self.launch
         )]
-
-
         pyxel.run(self.update, self.draw)
+
+    def launch_game(self):
+        self.gamestate = 'starting'
 
     def load_restart(self):
         self.score_object.clear()
@@ -57,7 +58,7 @@ class Breakout:
         self.lives = 3
         self.flag_brick_collide = False
         self.loading_next_level = False
-        self.gamestate = 'playing'
+        self.gamestate = 'playing level 1'
 
 
         # Reload the current level and initialize fresh bricks
@@ -68,6 +69,7 @@ class Breakout:
 
         # Reset brick states
         self.lenbricks = len(self.bricks)
+        # self.lenbricks = 1
 
         self.balls: list[Ball] = [Ball(
             self.w_layout // 2 - self.ball_diameter // 2,
@@ -85,6 +87,7 @@ class Breakout:
         self.curlevel = self.stagemaps[self.stage_x]
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
         self.lenbricks = len(self.bricks)
+        
         self.paddle = Paddle()
         self.balls = [Ball(
                 self.w_layout // 2 - self.ball_diameter // 2,
@@ -94,7 +97,12 @@ class Breakout:
                 self.lives,
                 self.launch
             )]
+        
     def update(self):
+
+        if pyxel.btnp(pyxel.KEY_A) and self.gamestate == 'starting':
+            self.gamestate = 'loading level 1'
+
         not_alive = all(not ball.alive for ball in self.balls)
 
         if not_alive and self.lives >= 0:
@@ -117,7 +125,6 @@ class Breakout:
         for i in range(len(self.score_object) - 1, -1, -1):  # Iterate backwards
 
             s = self.score_object[i]
-            print(s.alive)
             if s.acquired:
                 self.score += s.points
                 self.score_object.pop(i)  # Remove directly by index
@@ -144,67 +151,96 @@ class Breakout:
                     self.balls.append(ball)
 
                 else:
-
-
                     for _ in range(2):
                         self.score_object.append(Score_Object(randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.score, self.paddle ))
             b.update()
 
-        print(self.lenbricks, len(self.score_object))
+        if self.stage_x == 2 and self.lenbricks == 0 and len(self.score_object) == 0:
+            self.gamestate = 'win'
 
-        if self.lenbricks == 0 and not self.loading_next_level and len(self.score_object) == 0:
-            self.gamestate = 'loading next level'
+        if self.lenbricks == 0 and not self.loading_next_level and self.gamestate == 'playing level 1':
+            self.gamestate = 'loading level 2'
+            self.loading_next_level = True
+            self.load_next_level()
+
+        if self.lenbricks == 0 and not self.loading_next_level and self.gamestate == 'playing level 2':
+            self.gamestate = 'loading level 3'
             self.loading_next_level = True
             self.load_next_level()
 
         if self.lives == 0:
             self.gamestate = 'gameover'
 
-        if pyxel.btnp(pyxel.KEY_SPACE) and self.gamestate == 'gameover':
+        if pyxel.btnp(pyxel.KEY_SPACE) and (self.gamestate == 'gameover' or self.gamestate == 'win'):
             self.load_restart()
-            self.gamestate = 'playing'
+            self.gamestate = 'playing level 1'
+
+
     
     def draw(self):
         pyxel.cls(0)
 
-        if self.curlevel == 'stage1' and self.gamestate == 'playing':
+        if self.gamestate == 'starting':
+            Start().draw()
+
+        if self.curlevel == 'stage1' and self.gamestate == 'playing level 1':
             Stage1Map().draw()
         
-        elif self.curlevel == 'stage2' and self.gamestate == 'playing':
+        elif self.curlevel == 'stage2' and self.gamestate == 'playing level 2':
             Stage2Map().draw()
 
-        elif self.curlevel == 'stage3' and self.gamestate == 'playing':
+        elif self.curlevel == 'stage3' and self.gamestate == 'playing level 3':
             Stage3Map().draw()
+
+        if self.gamestate == 'playing level 1' or self.gamestate == 'playing level 2' or self.gamestate == 'playing level 3':
+            for b in self.balls:
+                b.draw()
+            self.paddle.draw()
+
+            for brick in self.bricks:
+                if brick.alive:
+                    brick.draw()
+                elif not brick.counted:
+                    self.lenbricks -= 1
+                    brick.counted = True
+
+            for s in self.score_object:
+                s.draw()
+
+            for i in self.lives_display:
+                i.draw()
             
-        for b in self.balls:
-            b.draw()
-        self.paddle.draw()
-
-        for brick in self.bricks:
-            if brick.alive:
-                brick.draw()
-            elif not brick.counted:
-                self.lenbricks -= 1
-                brick.counted = True
-
-
-        for s in self.score_object:
-            s.draw()
-
-        for i in self.lives_display:
-            i.draw()
+            pyxel.text(5, 192, 'Score: {}'.format(self.score), pyxel.COLOR_BLACK)
 
         if self.gamestate == 'gameover':
             GameOver().draw()
-                    
-        if self.gamestate == 'loading next level':
+        
+        #####
+        pyxel.mouse(visible=True)
+
+        if self.gamestate == 'loading level 1':
+            Pregame().draw()
+            pyxel.flip()  
+            sleep(1)
+            self.load_restart()
+
+        if self.gamestate == 'loading level 2':
             NextStage1_2().draw()
             pyxel.flip()  
             sleep(1)
-            self.gamestate = 'playing'
+            self.gamestate = 'playing level 2'
 
-        
-        pyxel.mouse(visible=True)
+        if self.gamestate == 'loading level 3':
+            NextStage2_3().draw()
+            pyxel.flip()  
+            sleep(1)
+            self.gamestate = 'playing level 3'
+
+
+        if self.curlevel == 'stage3' and self.gamestate == 'win':
+            Win().draw()
+            pyxel.text(45, 175, 'Score: {}'.format(self.score), pyxel.COLOR_WHITE)
+            self.paddle.launch = False
 
         
 Breakout()
