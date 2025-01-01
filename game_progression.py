@@ -38,8 +38,8 @@ class Pregame:
         pyxel.rect(0, 0, 120, 200, pyxel.COLOR_PEACH)
         pyxel.elli(25, 100, 75, 35, pyxel.COLOR_NAVY)
         pyxel.blt(45, 115, 0, 160, 32, 64, 64, 0, None, 2)
-        pyxel.text(15, 30, '"A small price to pay."', pyxel.COLOR_BLACK)
-        pyxel.text(35, 40, "Loading Stage...", pyxel.COLOR_BLACK)
+        pyxel.text(15, 30, '"A small price to pay."', pyxel.COLOR_NAVY)
+        pyxel.text(35, 40, "Loading Stage...", pyxel.COLOR_NAVY)
 
 class Win:
     def __init__(self) -> None:
