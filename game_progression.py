@@ -77,8 +77,7 @@ class NextStage1_2:
         pyxel.text(25, 30, '"Out of many, one."', pyxel.COLOR_WHITE)
         pyxel.text(20, 40, "Loading Next Stage...", pyxel.COLOR_WHITE)
         pyxel.blt(45, 145, 0, 128, 224, 32, 32, 0, None, 2)
-        
-
+    
 
 class NextStage2_3:
     def __init__(self) -> None:

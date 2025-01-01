@@ -204,9 +204,10 @@ class Breakout:
         elif self.curlevel == 'stage3' and self.gamestate == 'playing level 3':
             Stage3Map().draw()
             
-        for b in self.balls:
-            b.draw()
-        self.paddle.draw()
+        if self.gamestate == 'playing level 1' or self.gamestate == 'playing level 2' or self.gamestate == 'playing level 3':
+            for b in self.balls:
+                b.draw()
+            self.paddle.draw()
 
             for brick in self.bricks:
                 if brick.alive:
@@ -218,8 +219,8 @@ class Breakout:
             for s in self.score_object:
                 s.draw()
 
-        for i in self.lives_display:
-            i.draw()
+            for i in self.lives_display:
+                i.draw()
 
         if self.gamestate == 'gameover':
             GameOver().draw()
