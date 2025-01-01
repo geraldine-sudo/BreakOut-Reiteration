@@ -28,19 +28,30 @@ class Score_Object:
         if self.alive:
             new_y = self.y_obj + self.G  # Apply gravity
 
-            # Check if the object has reached the paddle's top and is horizontally aligned
-            if (self.y_obj + self.h_obj >= self.paddle.y_paddle and
-                self.x_obj >= self.paddle.x_paddle and
-                self.x_obj <= self.paddle.x_paddle + self.paddle.w_paddle):
+            if self.acquired:
+                self.alive = False
+            elif (self.y_obj <= self.paddle.y_paddle - self.h_obj and  
+                 self.paddle.x_paddle - self.w_obj < self.x_obj < self.paddle.x_paddle + self.paddle.w_paddle and
+                 new_y > self.paddle.y_paddle - self.h_obj):
+                
+                # checks if the current object is above the paddle and if updated paddle is below
+                # will draw at the top of the paddle and add score 
+                
                 self.y_obj = self.paddle.y_paddle - self.h_obj
                 self.acquired = True  
-                self.alive = False  
+
+            elif (self.paddle.x_paddle - self.w_obj <self.x_obj < self.paddle.x_paddle + self.paddle.w_paddle and
+                  self.paddle.y_paddle - self.h_obj<= self.y_obj < self.paddle.y_paddle + self.paddle.h_paddle):
+                
+                # if obj inside the paddle will not be drawn anymore 
+                self.acquired = True
+                self.alive = False
+
             elif self.y_obj >= self.paddle.h_layout:
                 self.alive = False
             else:
                 # If the object hasn't hit the paddle yet, keep falling
                 self.y_obj = new_y
-
     def draw(self): # testing only
         if self.alive: 
             if self.type == 1: 
