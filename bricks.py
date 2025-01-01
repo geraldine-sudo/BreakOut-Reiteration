@@ -2,6 +2,7 @@ import pyxel
 import json
 from pprint import pprint
 
+
 brick_specs = {1: {
                     "score": 50,
                     "hits": 1,
@@ -88,8 +89,8 @@ brick_specs = {1: {
                     "img": 0,
                     "u": 152,
                     "v": 80,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     },
         7: {        "score": 0,
                     "hits": -1,
@@ -104,74 +105,75 @@ brick_specs = {1: {
                     "img": 0,
                     "u": 144,
                     "v": 32,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     },
         8.1: {        "score": 0,
                     "hits": 1,
                     "img": 0,
                     "u": 152,
                     "v": 32,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     },
         8.2: {        "score": 0,
                     "hits": 1,
                     "img": 0,
                     "u": 144,
                     "v": 40,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     },
         8.3: {        "score": 0,
                     "hits": 1,
                     "img": 0,
                     "u": 152,
                     "v": 40,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     },
         9: {        "score": 50,
                     "hits": 1,
                     "img": 0,
                     "u": 128,
                     "v": 80,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     },
         9.1: {        "score": 50,
                     "hits": 1,
                     "img": 0,
                     "u": 136,
                     "v": 80,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     },
         9.2: {        "score": 50,
                     "hits": 1,
                     "img": 0,
                     "u": 128,
                     "v": 88,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     },
         9.3: {        "score": 50,
                     "hits": 1,
                     "img": 0,
                     "u": 136,
                     "v": 88,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     },
         9.4: {        "score": 50,
                     "hits": 1,
                     "img": 0,
                     "u": 144,
                     "v": 80,
-                    "w": 4,
-                    "h": 4
+                    "w": 7,
+                    "h": 7
                     }
 }
+
 
 
 #store brick specifications in json file
@@ -230,7 +232,8 @@ class Bricks:
             self.hits -= 1
             if self.hits == 0:
                 self.alive = False
-            if self.brick_level == "3" and self.alive:
+
+            if self.alive:
                 self.image = str(float(self.image) + 0.1)
                 self.update_attributes()
 
