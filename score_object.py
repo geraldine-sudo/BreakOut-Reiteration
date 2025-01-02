@@ -258,7 +258,8 @@ class Score_Object:
             self.main.lives += 1
 
         elif self.image == "9.2":
-            self.main.anti_gravity = False
+            print(True, "antigravity")
+            self.main.anti_gravity = True
             self.main.t_anti_gravity += 300
         elif self.image == "9.3":
             self.main.extend_paddle = True
