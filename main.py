@@ -9,7 +9,6 @@ from score_object import Score_Object, Streak_Score
 from random import randint
 import math
 import json
-from pprint import pprint
 
 def load_level(level: str, lives: int):
     this_level = []
@@ -34,7 +33,7 @@ def load_level(level: str, lives: int):
 
 def configs(curstage):
     stages = access_json('stages')
-    return (stages[curstage]['G'], stages[curstage]['Qtty_scoreObjects'], stages[curstage]['Q'], stages[curstage]['X'])
+    return (stages[curstage]['G'], stages[curstage]['Qtty_scoreObjects'], stages[curstage]['Q'], stages[curstage]['X'],  stages[curstage]['Points'])
 
 class Breakout:
     def __init__(self):
@@ -72,7 +71,7 @@ class Breakout:
         self.curlevel = self.stagemaps[self.stage_x]
 
         # need to add P as configurable
-        self.G, self.K, self.Q, self.X = (configs(self.curlevel))
+        self.G, self.K, self.Q, self.X, self.P = (configs(self.curlevel))
 
         self.bricks: list[Bricks] = []
         self.lenbricks = None
@@ -159,9 +158,9 @@ class Breakout:
             )]
         
     def update(self):
-        self.G, self.K, self.Q, self.X = (configs(self.curlevel))
+        self.G, self.K, self.Q, self.X, self.P = (configs(self.curlevel))
 
-        # print(self.G, self.K, self.Q, self.X)
+        # print(self.G, self.K, self.Q, self.X, self.P)
 
         if pyxel.btnp(pyxel.KEY_A) and self.gamestate == 'starting':
             self.gamestate = 'loading level 1'
@@ -282,9 +281,6 @@ class Breakout:
 
         if self.lenbricks == 0 and self.gamestate == 'playing level 3' and len(self.score_object) == 0:
             self.gamestate = 'win'
-        
-        for i in self.streak_score:
-            print(i.score)
 
     def draw(self):
         pyxel.cls(0)
