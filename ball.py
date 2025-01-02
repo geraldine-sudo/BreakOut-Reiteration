@@ -488,9 +488,6 @@ class Ball:
 
     def draw(self):
 
-        print(self.acc_y + self.G)
-
-
         for  (tx, ty) in self.trail:
             pyxel.rect(tx+ self.r_ball, ty, 3.5//2, 3.5//2, pyxel.COLOR_RED)
 

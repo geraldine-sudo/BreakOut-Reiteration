@@ -261,7 +261,12 @@ stages = {'stage1': {'brick_placement':[['', '1', '1', '', '1', '1', '', '', '']
                                         ['', '', '', '', '', '', '', '', ''],
                                         ['', '', '', '', '', '', '', '', ''],
                                         ['', '', '', '', '', '', '', '', ''],
-                                        ['', '', '', '', '6', '6', '6', '', '']]},
+                                        ['', '', '', '', '6', '6', '6', '', '']],
+                        'Qtty_scoreObjects': 10,
+                        'Points': 50,
+                        'G': 3,
+                        'X': 20,
+                        'Q': 5},
 
             'stage2': {'brick_placement':[['', '', '', '', '', '', '', '', ''],
                                         ['', '', '', '', '', '', '', '', ''],
@@ -274,7 +279,12 @@ stages = {'stage1': {'brick_placement':[['', '1', '1', '', '1', '1', '', '', '']
                                         ['', '', '', '', '', '', '', '', ''],
                                         ['', '', '', '', '', '', '', '', ''],
                                         ['', '', '', '', '', '', '', '', ''],
-                                        ['', '', '', '', '6', '6', '6', '', '']]},
+                                        ['', '', '', '', '6', '6', '6', '', '']],
+                        'Qtty_scoreObjects': 15,
+                        'Points': 100,
+                        'G': 4,
+                        'X': 25,
+                        'Q': 10},
 
             'stage3': {'brick_placement':[['', '', '', '', '', '', '', '', ''],
                                         ['', '', '', '', '', '', '', '', ''],
@@ -287,7 +297,12 @@ stages = {'stage1': {'brick_placement':[['', '1', '1', '', '1', '1', '', '', '']
                                         ['', '', '', '', '', '', '', '', ''],
                                         ['', '', '', '', '', '', '', '', ''],
                                         ['', '', '', '', '', '', '', '', ''],
-                                        ['', '', '', '', '7', '7', '7', '', '']]}
+                                        ['', '', '', '', '7', '7', '7', '', '']],
+                        'Qtty_scoreObjects': 20,
+                        'Points': 150,
+                        'G': 6,
+                        'X': 30,
+                        'Q': 15}
           }
 
 # store stages in json file
@@ -295,7 +310,6 @@ with open('stages.json', 'w') as f:
     json.dump(stages, f)
 
 # test
-
 # with open('stages.json', 'r') as f:
 #     stage = json.load(f)
 #     for i in stage['stage1']['brick_placement']:
@@ -310,22 +324,3 @@ with open('stages.json', 'w') as f:
 #         stage = json.load(f)
 #     return stage
 
-def load_level(level: str, lives: int):
-    this_level = []
-    lives_display = []
-
-    possible_bricks = ["1", "2", "3", "4", "5"]
-
-    with open('stages.json', 'r') as f:
-        stage = json.load(f)
-        y = 0
-        for i in stage[level]['brick_placement']:
-            x = 16 * (len(i) - 1)  # Start from the rightmost column
-            for j in reversed(i):  # Iterate over the row in reverse
-                if j in possible_bricks:
-                    this_level.append(Bricks(x, y, j))
-                elif (j == '6' or j == '7') and len(lives_display) < lives:
-                    lives_display.append(Bricks(x, y, j))
-                x -= 16  # Move to the left for the next brick
-            y += 16  # Move to the next row
-    return this_level, lives_display

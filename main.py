@@ -1,13 +1,40 @@
 import pyxel
 from paddle import Paddle
 from ball import Ball
-from bricks import load_level, Bricks
+from bricks import Bricks, access_json
 from stages import Stage1Map, Stage2Map, Stage3Map
 from game_progression import GameOver, NextStage1_2, NextStage2_3, Win, Start, Pregame
 from time import sleep
 from score_object import Score_Object, Streak_Score
 from random import randint
 import math
+import json
+from pprint import pprint
+
+def load_level(level: str, lives: int):
+    this_level = []
+    lives_display = []
+
+    possible_bricks = ["1", "2", "3", "4", "5"]
+
+    with open('stages.json', 'r') as f:
+        stage = json.load(f)
+
+        y = 0
+        for i in stage[level]['brick_placement']:
+            x = 16 * (len(i) - 1)  # Start from the rightmost column
+            for j in reversed(i):  # Iterate over the row in reverse
+                if j in possible_bricks:
+                    this_level.append(Bricks(x, y, j))
+                elif (j == '6' or j == '7') and len(lives_display) < lives:
+                    lives_display.append(Bricks(x, y, j))
+                x -= 16  # Move to the left for the next brick
+            y += 16  # Move to the next row
+    return this_level, lives_display
+
+def configs(curstage):
+    stages = access_json('stages')
+    return (stages[curstage]['G'], stages[curstage]['Qtty_scoreObjects'], stages[curstage]['Q'], stages[curstage]['X'])
 
 class Breakout:
     def __init__(self):
@@ -16,10 +43,11 @@ class Breakout:
         self.ball_diameter = 7
         self.launch = False
         self.score_object: list[Score_Object] = []
-        self.G = 3 # need to make it configurable
-        self.K = 2
-        self.Q = 10  # need to make it configurable
-        self.X = 20 # need to make configurable
+
+        # self.G = 3 # need to make it configurable
+        # self.K = 2
+        # self.Q = 10  # need to make it configurable
+        # self.X = 20 # need to make configurable
 
         # score
         self.streak_score: list[Streak_Score]= []
@@ -33,7 +61,6 @@ class Breakout:
         self.t_anti_gravity = 0
         self.t_extend_paddle = 0
         
-
         pyxel.init(self.w_layout, self.h_layout, title='Breakout')
 
         self.paddle = Paddle(self)
@@ -43,6 +70,10 @@ class Breakout:
         self.stage_x = 0
 
         self.curlevel = self.stagemaps[self.stage_x]
+
+        # need to add P as configurable
+        self.G, self.K, self.Q, self.X = (configs(self.curlevel))
+
         self.bricks: list[Bricks] = []
         self.lenbricks = None
         self.lives = 3
@@ -83,7 +114,6 @@ class Breakout:
         self.loading_next_level = False
         self.gamestate = 'playing level 1'
 
-
         # Reload the current level and initialize fresh bricks
         self.curlevel = self.stagemaps[self.stage_x]
         self.bricks, self.lives_display = load_level(self.curlevel, self.lives)
@@ -102,10 +132,10 @@ class Breakout:
             self.lives,
             self.launch
         )]
-
         # Reinitialize the Ball with the updated bricks
 
     def load_next_level(self):
+
         self.loading_next_level = False
         self.extend_paddle = False
         self.t_extend_paddle = 0
@@ -129,6 +159,9 @@ class Breakout:
             )]
         
     def update(self):
+        self.G, self.K, self.Q, self.X = (configs(self.curlevel))
+
+        # print(self.G, self.K, self.Q, self.X)
 
         if pyxel.btnp(pyxel.KEY_A) and self.gamestate == 'starting':
             self.gamestate = 'loading level 1'
@@ -226,8 +259,6 @@ class Breakout:
                 else:
                     
                     self.lives_display.append(Bricks(self.lives_display[-1].x-16, self.lives_display[-1].y, "6"))
-
-
             
 
         if self.lenbricks == 0 and not self.loading_next_level and self.gamestate == 'playing level 1' and len(self.score_object) == 0:
@@ -251,6 +282,9 @@ class Breakout:
 
         if self.lenbricks == 0 and self.gamestate == 'playing level 3' and len(self.score_object) == 0:
             self.gamestate = 'win'
+        
+        for i in self.streak_score:
+            print(i.score)
 
     def draw(self):
         pyxel.cls(0)
