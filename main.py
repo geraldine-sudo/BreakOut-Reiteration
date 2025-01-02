@@ -104,6 +104,7 @@ class Breakout:
         # Reinitialize the Ball with the updated bricks
 
     def load_next_level(self):
+        self.loading_next_level = False
         self.extend_paddle = False
         self.t_extend_paddle = 0
         self.streak = 0
@@ -222,6 +223,8 @@ class Breakout:
             self.gamestate = 'loading level 2'
             self.loading_next_level = True
             self.load_next_level()
+
+
 
         if self.lenbricks == 0 and not self.loading_next_level and self.gamestate == 'playing level 2' and len(self.score_object) == 0:
             self.gamestate = 'loading level 3'
