@@ -328,7 +328,7 @@ class Breakout:
             pyxel.text(5, 185, "Score: " + str(self.score), pyxel.COLOR_BLACK, None)
             if self.extra_lives >0:
                 pyxel.text(97, 192, f"{self.extra_lives}X", pyxel.COLOR_BLACK, None)
-                pyxel.blt(110,192, 0, 152, 80, 7,5)
+                pyxel.blt(110,192, 0, 152, 80, 7,5, 0)
 
             if self.extend_paddle:
 
@@ -338,13 +338,13 @@ class Breakout:
                     
                     text_x = 10 - text_width // 2
                     pyxel.circ(10, 140, 8, pyxel.COLOR_WHITE)
-                    pyxel.blt(7, 135, 0, 136, 88, 7, 7)
+                    pyxel.blt(7, 135, 0, 136, 88, 7, 7, 0)
                     pyxel.text(text_x, 142, text, pyxel.COLOR_BLACK, None)
 
             if self.anti_gravity:
 
                 pyxel.circ(110, 140, 8, pyxel.COLOR_WHITE)
-                pyxel.blt(107, 135, 0, 128, 88, 7, 7)
+                pyxel.blt(107, 135, 0, 128, 88, 7, 7, 0)
                 pyxel.text(107, 142, f"{math.ceil(self.t_anti_gravity / 30)}s", pyxel.COLOR_BLACK, None)
 
         #####

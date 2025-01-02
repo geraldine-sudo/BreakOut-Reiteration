@@ -303,7 +303,7 @@ class Score_Object:
                 self.y_obj = new_y
     def draw(self): # testing only
         if self.alive: 
-            pyxel.blt(self.x_obj, self.y_obj, self.img,self.u,self.v, self.w_obj,self.h_obj)
+            pyxel.blt(self.x_obj, self.y_obj, self.img,self.u,self.v, self.w_obj,self.h_obj, 0)
 
 
             

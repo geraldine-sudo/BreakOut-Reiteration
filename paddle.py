@@ -50,4 +50,4 @@ class Paddle:
             pyxel.blt(self.x_paddle, self.y_paddle, 0, 0, 135, self.w_paddle, self.h_paddle, 0)
         # pyxel.blt(self.x_paddle, self.y_paddle, 0, 24, 136, self.w_paddle, self.h_paddle, 0)
         if (0 < pyxel.mouse_x <= self.w_layout) and (0 < pyxel.mouse_y <= self.h_layout):
-            pyxel.text(5, 190, f'x: {pyxel.mouse_x}', pyxel.COLOR_BLACK, None)
+            pyxel.text(5, 192, f'x: {pyxel.mouse_x}', pyxel.COLOR_BLACK, None)
