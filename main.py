@@ -55,7 +55,7 @@ class Breakout:
 
         self.launch_game()
 
-        self.balls = [Ball(
+        self.balls = [Ball(self,
             self.w_layout // 2 - self.ball_diameter // 2,
             self.paddle.y_paddle - self.ball_diameter,
             self.paddle, self.G,
@@ -92,7 +92,7 @@ class Breakout:
         self.lenbricks = sum(1 for brick in self.bricks if brick.brick_level != "4")
         # self.lenbricks = 1
 
-        self.balls: list[Ball] = [Ball(
+        self.balls: list[Ball] = [Ball(self,
             self.w_layout // 2 - self.ball_diameter // 2,
             self.paddle.y_paddle - self.ball_diameter,
             self.paddle, self.G,
@@ -115,7 +115,7 @@ class Breakout:
         self.lenbricks = sum(1 for brick in self.bricks if brick.brick_level != "4")
         
         self.paddle = Paddle(self)
-        self.balls = [Ball(
+        self.balls = [Ball(self,
                 self.w_layout // 2 - self.ball_diameter // 2,
                 self.paddle.y_paddle - self.ball_diameter,
                 self.paddle, self.G,
@@ -137,6 +137,11 @@ class Breakout:
                 if self.t_extend_paddle < 0:
                     self.extend_paddle = False
 
+            if self.anti_gravity:
+                self.t_anti_gravity -= 1
+                if self.t_anti_gravity < 0:
+                    self.anti_gravity= False
+
             not_alive = all(not ball.alive for ball in self.balls)
 
             if not_alive and self.lives >= 0:
@@ -146,7 +151,7 @@ class Breakout:
                 self.lives -= 1
                 self.lives_display.pop()
                 self.paddle = Paddle(self)
-                self.balls = [Ball(
+                self.balls = [Ball(self,
                     self.w_layout // 2 - self.ball_diameter // 2,
                     self.paddle.y_paddle - self.ball_diameter,
                     self.paddle,self.G,
@@ -190,7 +195,7 @@ class Breakout:
                 if b.hit and b.hits == 1:
 
                     if b.brick_level == "5":
-                        ball = Ball(b.x + 5, b.y + 3, self.paddle, self.G, self.bricks, self. lives, True)
+                        ball = Ball(self, b.x + 5, b.y + 3, self.paddle, self.G, self.bricks, self. lives, True)
                         ball.active = False
                         ball.degree = randint(190, 350) 
                         ball.angle = math.radians(ball.degree)
@@ -295,6 +300,11 @@ class Breakout:
                     pyxel.circ(10, 140, 8, pyxel.COLOR_WHITE)
                     pyxel.blt(7, 135, 0, 136, 88, 7, 7)
                     pyxel.text(text_x, 142, text, pyxel.COLOR_BLACK, None)
+
+
+            pyxel.circ(110, 140, 8, pyxel.COLOR_WHITE)
+            pyxel.blt(107, 135, 0, 128, 88, 7, 7)
+            pyxel.text(107, 142, f"{math.ceil(self.t_anti_gravity / 30)}s", pyxel.COLOR_BLACK, None)
 
         #####
 
