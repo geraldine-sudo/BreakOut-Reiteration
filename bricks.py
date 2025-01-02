@@ -209,7 +209,6 @@ class Bricks:
             self.u = brick['u']
             self.v = brick['v']
             self.hits = brick['hits']
-            self.score = brick['score']
 
 
     def update_attributes(self):
