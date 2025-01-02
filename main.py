@@ -5,7 +5,7 @@ from bricks import Bricks, access_json
 from stages import Stage1Map, Stage2Map, Stage3Map
 from game_progression import GameOver, NextStage1_2, NextStage2_3, Win, Start, Pregame
 from time import sleep
-from score_object import Score_Object, Streak_Score
+from score_object import Score_Object, Streak_Score, Powerup_Text
 from random import randint
 import math
 import json
@@ -42,6 +42,7 @@ class Breakout:
         self.ball_diameter = 7
         self.launch = False
         self.score_object: list[Score_Object] = []
+        self.powerup_text: list[Powerup_Text] = []
 
         # self.G = 3 # need to make it configurable
         # self.K = 2
@@ -77,7 +78,6 @@ class Breakout:
         self.lenbricks = None
         self.lives = 3
         self.lives_display = None
-        self.powerup_state = None
 
         self.flag_brick_collide = False
         self.loading_next_level = False
@@ -90,7 +90,6 @@ class Breakout:
             self.paddle.y_paddle - self.ball_diameter,
             self.paddle, self.G,
             self.bricks,
-            self.lives,
             self.launch
         )]
         pyxel.run(self.update, self.draw)
@@ -99,6 +98,7 @@ class Breakout:
         self.gamestate = 'starting'
 
     def load_restart(self):
+        self.powerup_text.clear()
         self.anti_gravity = False
         self.t_anti_gravity = 0
         self.extend_paddle = False
@@ -128,13 +128,12 @@ class Breakout:
             self.paddle.y_paddle - self.ball_diameter,
             self.paddle, self.G,
             self.bricks,
-            self.lives,
             self.launch
         )]
         # Reinitialize the Ball with the updated bricks
 
     def load_next_level(self):
-
+        self.powerup_text.clear()
         self.loading_next_level = False
         self.extend_paddle = False
         self.t_extend_paddle = 0
@@ -153,7 +152,6 @@ class Breakout:
                 self.paddle.y_paddle - self.ball_diameter,
                 self.paddle, self.G,
                 self.bricks,
-                self.lives,
                 self.launch
             )]
         
@@ -181,6 +179,7 @@ class Breakout:
             not_alive = all(not ball.alive for ball in self.balls)
 
             if not_alive and self.lives >= 0:
+                self.powerup_text.clear()
                 self.anti_gravity = False
                 self.t_anti_gravity = 0
                 self.extend_paddle = False
@@ -194,7 +193,6 @@ class Breakout:
                     self.paddle.y_paddle - self.ball_diameter,
                     self.paddle,self.G,
                     self.bricks,
-                    self.lives,
                     self.launch
                 )]
 
@@ -211,15 +209,14 @@ class Breakout:
 
 
 
-
             for i in range(len(self.score_object) - 1, -1, -1):  # Iterate backwards
 
                 s = self.score_object[i]
 
                 if s.acquired:
                     self.streak += 1
-                    self.score += s.points + self.Q*(self.streak -1)
-                    self.streak_score.append(Streak_Score(s.x_obj, s.y_obj, s.points + self.Q*(self.streak -1)))
+                    self.score += self.P + self.Q*(self.streak -1)
+                    self.streak_score.append(Streak_Score(s.x_obj, s.y_obj, self.P + self.Q*(self.streak -1)))
                     self.score_object.pop(i)  # Remove directly by index
 
                 elif not s.alive:
@@ -233,7 +230,7 @@ class Breakout:
                 if b.hit and b.hits == 1:
 
                     if b.brick_level == "5":
-                        ball = Ball(self, b.x + 5, b.y + 3, self.paddle, self.G, self.bricks, self. lives, True)
+                        ball = Ball(self, b.x + 5, b.y + 3, self.paddle, self.G, self.bricks, True)
                         ball.active = False
                         ball.degree = randint(190, 350) 
                         ball.angle = math.radians(ball.degree)
@@ -246,9 +243,14 @@ class Breakout:
 
                     else:
 
-                        for _ in range(2):
-                            self.score_object.append(Score_Object(self,randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.brick_level, b.score, self.paddle, self.G, self.X ))
+                        for _ in range(self.K):
+                            self.score_object.append(Score_Object(self,randint(b.x + 1, b.x - 1 + b.w), randint(b.y + 1, b.y - 1 + b.h), b.brick_level, self.paddle, self.G, self.X ))
                 b.update()
+
+            if self.powerup_text:
+                self.powerup_text[0].update()
+                if self.powerup_text[0].t > 15:
+                    self.powerup_text.pop(0)
 
             self.extra_lives = self.lives - 4
             if self.lives > len(self.lives_display) <4:
@@ -264,7 +266,6 @@ class Breakout:
             self.gamestate = 'loading level 2'
             self.loading_next_level = True
             self.load_next_level()
-
 
 
         if self.lenbricks == 0 and not self.loading_next_level and self.gamestate == 'playing level 2' and len(self.score_object) == 0:
@@ -298,6 +299,26 @@ class Breakout:
             Stage3Map().draw()
             
         if self.gamestate == 'playing level 1' or self.gamestate == 'playing level 2' or self.gamestate == 'playing level 3':
+
+            if self.extend_paddle:
+
+                if self.extend_paddle:
+                    text = f"{math.ceil(self.t_extend_paddle / 30)}s"
+                    text_width = len(text) * 4  
+                    
+                    text_x = 10 - text_width // 2
+                    pyxel.circ(10, 140, 8, pyxel.COLOR_WHITE)
+                    pyxel.blt(7, 135, 0, 136, 88, 7, 7, 0)
+                    pyxel.text(text_x, 142, text, pyxel.COLOR_BLACK, None)
+
+            if self.anti_gravity:
+
+                pyxel.circ(110, 140, 8, pyxel.COLOR_WHITE)
+                pyxel.blt(107, 135, 0, 128, 88, 7, 7, 0)
+                pyxel.text(107, 142, f"{math.ceil(self.t_anti_gravity / 30)}s", pyxel.COLOR_BLACK, None)
+
+            if self.powerup_text:
+                self.powerup_text[0].draw()
             for b in self.balls:
                 b.draw()
             self.paddle.draw()
@@ -319,29 +340,13 @@ class Breakout:
                 i.draw()
 
             if self.streak > 1:
-                pyxel.text(5, 192, f'Streak: {self.streak}', pyxel.COLOR_BLACK, None)
+
+                pyxel.text(5, 178, f'Streak: {self.streak}', pyxel.COLOR_BLACK, None)
         
             pyxel.text(5, 185, "Score: " + str(self.score), pyxel.COLOR_BLACK, None)
             if self.extra_lives >0:
                 pyxel.text(97, 192, f"{self.extra_lives}X", pyxel.COLOR_BLACK, None)
                 pyxel.blt(110,192, 0, 152, 80, 7,5, 0)
-
-            if self.extend_paddle:
-
-                if self.extend_paddle:
-                    text = f"{math.ceil(self.t_extend_paddle / 30)}s"
-                    text_width = len(text) * 4  
-                    
-                    text_x = 10 - text_width // 2
-                    pyxel.circ(10, 140, 8, pyxel.COLOR_WHITE)
-                    pyxel.blt(7, 135, 0, 136, 88, 7, 7, 0)
-                    pyxel.text(text_x, 142, text, pyxel.COLOR_BLACK, None)
-
-            if self.anti_gravity:
-
-                pyxel.circ(110, 140, 8, pyxel.COLOR_WHITE)
-                pyxel.blt(107, 135, 0, 128, 88, 7, 7, 0)
-                pyxel.text(107, 142, f"{math.ceil(self.t_anti_gravity / 30)}s", pyxel.COLOR_BLACK, None)
 
         #####
 
