@@ -69,6 +69,8 @@ class Breakout:
         self.gamestate = 'starting'
 
     def load_restart(self):
+        self.anti_gravity = False
+        self.t_anti_gravity = 0
         self.extend_paddle = False
         self.t_extend_paddle = 0
         self.streak = 0
@@ -107,6 +109,8 @@ class Breakout:
         self.loading_next_level = False
         self.extend_paddle = False
         self.t_extend_paddle = 0
+        self.anti_gravity = False
+        self.t_anti_gravity = 0
         self.streak = 0
         self.stage_x += 1
         self.curlevel = self.stagemaps[self.stage_x]
@@ -145,6 +149,8 @@ class Breakout:
             not_alive = all(not ball.alive for ball in self.balls)
 
             if not_alive and self.lives >= 0:
+                self.anti_gravity = False
+                self.t_anti_gravity = 0
                 self.extend_paddle = False
                 self.t_extend_paddle = 0
                 self.streak = 0
@@ -301,10 +307,11 @@ class Breakout:
                     pyxel.blt(7, 135, 0, 136, 88, 7, 7)
                     pyxel.text(text_x, 142, text, pyxel.COLOR_BLACK, None)
 
+            if self.anti_gravity:
 
-            pyxel.circ(110, 140, 8, pyxel.COLOR_WHITE)
-            pyxel.blt(107, 135, 0, 128, 88, 7, 7)
-            pyxel.text(107, 142, f"{math.ceil(self.t_anti_gravity / 30)}s", pyxel.COLOR_BLACK, None)
+                pyxel.circ(110, 140, 8, pyxel.COLOR_WHITE)
+                pyxel.blt(107, 135, 0, 128, 88, 7, 7)
+                pyxel.text(107, 142, f"{math.ceil(self.t_anti_gravity / 30)}s", pyxel.COLOR_BLACK, None)
 
         #####
 
