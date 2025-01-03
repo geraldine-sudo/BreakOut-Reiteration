@@ -174,9 +174,9 @@ brick_specs = {1: {
                     }
 }
 
-#store brick specifications in json file
-with open('bricks.json', 'w') as f:
-    json.dump(brick_specs, f)
+# #store brick specifications in json file
+# with open('bricks.json', 'w') as f:
+#     json.dump(brick_specs, f)
 
 def access_json(file: str):
     brick = {}

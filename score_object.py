@@ -3,7 +3,7 @@ from paddle import Paddle
 import random
 import json
 from pprint import pprint
-from bricks import access_json
+from bricks import brick_specs
 
 
 class Powerup_Text:
@@ -83,8 +83,10 @@ class Score_Object:
         self.acc_y = 0
 
         # Load brick data once
-        self.obj_data = access_json('bricks')
-        obj = self.obj_data.get(self.image, None)
+        # self.obj_data = access_json('bricks')
+        # obj = self.obj_data.get(self.image, None)
+
+        obj = brick_specs.get(float(self.image), None)
         if obj:
             self.img = obj['img']
             self.w_obj = obj['w']
