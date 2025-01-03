@@ -159,8 +159,6 @@ class Breakout:
             self.gamestate = 'loading level 1'
 
         if self.gamestate[0] == "p":
-
-
             if self.extend_paddle:
                 self.t_extend_paddle -= 1
                 if self.t_extend_paddle < 0:

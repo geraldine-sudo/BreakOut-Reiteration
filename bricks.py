@@ -174,8 +174,6 @@ brick_specs = {1: {
                     }
 }
 
-
-
 #store brick specifications in json file
 with open('bricks.json', 'w') as f:
     json.dump(brick_specs, f)
@@ -199,8 +197,10 @@ class Bricks:
         self.counted = False
 
         # Load brick data once
-        self.brick_data = access_json('bricks')
-        brick = self.brick_data.get(self.image, None)
+        # self.brick_data = access_json('bricks')
+        # brick = self.brick_data.get(self.image, None)
+
+        brick = brick_specs.get(float(self.image), None)
 
         if brick:
             self.img = brick['img']
@@ -213,7 +213,8 @@ class Bricks:
 
     def update_attributes(self):
         """Updates attributes based on the current brick level."""
-        brick = self.brick_data.get(self.image, None)
+        # brick = self.brick_data.get(self.image, None)
+        brick = brick_specs.get(float(self.image), None)
 
         if brick:
             self.img = brick['img']
