@@ -51,7 +51,7 @@ class Win:
         pyxel.text(25, 30, '"Veni, vidi, vici"', pyxel.COLOR_WHITE)
         pyxel.text(18, 40, "Press Space to Restart", pyxel.COLOR_WHITE)
         pyxel.circ(60, 110, 50, pyxel.COLOR_YELLOW)
-        pyxel.blt(45, 95, 0, 88, 152, 64, 64, 0, None, 2)
+        pyxel.blt(45, 95, 0, 88, 152, 64, 50, 0, None, 2)
         
 class GameOver:
     def __init__(self) -> None:

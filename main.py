@@ -1,4 +1,8 @@
 import pyxel
+from random import randint
+import math
+import json
+
 from paddle import Paddle
 from ball import Ball
 from bricks import Bricks, access_json
@@ -6,9 +10,6 @@ from stages import Stage1Map, Stage2Map, Stage3Map
 from game_progression import GameOver, NextStage1_2, NextStage2_3, Win, Start, Pregame
 from time import sleep
 from score_object import Score_Object, Streak_Score, Powerup_Text
-from random import randint
-import math
-import json
 
 def load_level(level: str, lives: int):
     this_level = []
@@ -31,10 +32,6 @@ def load_level(level: str, lives: int):
             y += 16  # Move to the next row
     return this_level, lives_display
 
-def configs(curstage):
-    stages = access_json('stages')
-    return (stages[curstage]['G'], stages[curstage]['Qtty_scoreObjects'], stages[curstage]['Q'], stages[curstage]['X'],  stages[curstage]['Points'])
-
 class Breakout:
     def __init__(self):
         self.w_layout = 120
@@ -43,11 +40,6 @@ class Breakout:
         self.launch = False
         self.score_object: list[Score_Object] = []
         self.powerup_text: list[Powerup_Text] = []
-
-        # self.G = 3 # need to make it configurable
-        # self.K = 2
-        # self.Q = 10  # need to make it configurable
-        # self.X = 20 # need to make configurable
 
         # score
         self.streak_score: list[Streak_Score]= []
@@ -71,8 +63,14 @@ class Breakout:
 
         self.curlevel = self.stagemaps[self.stage_x]
 
-        # need to add P as configurable
-        self.G, self.K, self.Q, self.X, self.P = (configs(self.curlevel))
+        # loading configurable features
+        stages = access_json('stages')
+        
+        self.K = 2
+        self.G = stages['G']
+        self.P = stages['P']
+        self.X = stages['X']
+        self.Q = stages['Q']
 
         self.bricks: list[Bricks] = []
         self.lenbricks = None
@@ -156,9 +154,6 @@ class Breakout:
             )]
         
     def update(self):
-        self.G, self.K, self.Q, self.X, self.P = (configs(self.curlevel))
-
-        # print(self.G, self.K, self.Q, self.X, self.P)
 
         if pyxel.btnp(pyxel.KEY_A) and self.gamestate == 'starting':
             self.gamestate = 'loading level 1'
@@ -285,6 +280,7 @@ class Breakout:
 
     def draw(self):
         pyxel.cls(0)
+
 
         if self.gamestate == 'starting':
             Start().draw()
