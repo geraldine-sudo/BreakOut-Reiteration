@@ -281,7 +281,6 @@ class Breakout:
     def draw(self):
         pyxel.cls(0)
 
-
         if self.gamestate == 'starting':
             Start().draw()
 
@@ -366,10 +365,11 @@ class Breakout:
 
         if self.gamestate == 'win':
             Win().draw()
-            pyxel.text(25, 172, "Your final score: " + str(self.score), pyxel.COLOR_WHITE)
+            pyxel.text(18, 175, "Your final score: " + str(self.score), pyxel.COLOR_WHITE)
 
         if self.gamestate == 'gameover':
             GameOver().draw()
+
         pyxel.mouse(visible=True)
 
         
